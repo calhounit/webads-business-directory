@@ -16,7 +16,7 @@
  * Plugin Name:       WebAds Business Directory
  * Plugin URI:        http://www.iadsnetwork.com
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            John Calhoun
  * Author URI:        http://www.iadsnetwork.com
  * License:           GPL-2.0+
@@ -30,7 +30,7 @@
  * 1.0.2 - bug fix
  * 1.0.3 - permission change for business sponsor menu items
  * 1.0.4 - bug fix
- * 1.0.5 - added service times field
+ * 1.0.5 - added details field
  * 1.0.6 - added required fields to update form
  * 1.0.7 - bug fix
  * 1.0.8 - added required fields in admin edit/add business
@@ -38,6 +38,7 @@
  * 1.1.0 - js changes to support js merge when caching
  * 1.1.1 - bug fix for borlabs
  * 1.2.0 - refactored twitter to x
+ * 1.3.0 - added categories feature
  */
 
 // If this file is called directly, abort.
@@ -50,16 +51,26 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('WEBADS_BUSINESS_DIRECTORY_VERSION', '1.0.0');
+define('WEBADS_BUSINESS_DIRECTORY_VERSION', '1.3.0');
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-webads-business-directory-activator.php
  */
-function activate_webads_business_directory()
-{
+function activate_webads_business_directory() {
     require_once plugin_dir_path(__FILE__) . 'includes/class-webads-business-directory-activator.php';
     Webads_Business_Directory_Activator::activate();
+    
+    // Register taxonomy first so we can add the default category
+    business_register_taxonomy();
+    
+    // Ensure the "Uncategorized" category exists
+    if (!term_exists('Uncategorized', 'business_category')) {
+        wp_insert_term('Uncategorized', 'business_category', array(
+            'description' => 'Default category for businesses',
+            'slug'        => 'uncategorized'
+        ));
+    }
 }
 
 /**
@@ -98,8 +109,64 @@ function run_webads_business_directory()
 
 run_webads_business_directory();
 
+// Register Custom Post Types
+add_action('init', 'business_post_types');
 
-// Register Custom Post Type
+// Register Custom Taxonomy for Business Categories
+add_action('init', 'business_register_taxonomy');
+
+/**
+ * Register custom taxonomy for business categories
+ */
+function business_register_taxonomy() {
+    $labels = array(
+        'name'                       => _x('Business Categories', 'Taxonomy General Name', 'webads-business-directory'),
+        'singular_name'              => _x('Business Category', 'Taxonomy Singular Name', 'webads-business-directory'),
+        'menu_name'                  => __('Categories', 'webads-business-directory'),
+        'all_items'                  => __('All Categories', 'webads-business-directory'),
+        'parent_item'                => __('Parent Category', 'webads-business-directory'),
+        'parent_item_colon'          => __('Parent Category:', 'webads-business-directory'),
+        'new_item_name'              => __('New Category Name', 'webads-business-directory'),
+        'add_new_item'               => __('Add New Category', 'webads-business-directory'),
+        'edit_item'                  => __('Edit Category', 'webads-business-directory'),
+        'update_item'                => __('Update Category', 'webads-business-directory'),
+        'view_item'                  => __('View Category', 'webads-business-directory'),
+        'separate_items_with_commas' => __('Separate categories with commas', 'webads-business-directory'),
+        'add_or_remove_items'        => __('Add or remove categories', 'webads-business-directory'),
+        'choose_from_most_used'      => __('Choose from the most used', 'webads-business-directory'),
+        'popular_items'              => __('Popular Categories', 'webads-business-directory'),
+        'search_items'               => __('Search Categories', 'webads-business-directory'),
+        'not_found'                  => __('Not Found', 'webads-business-directory'),
+        'no_terms'                   => __('No categories', 'webads-business-directory'),
+        'items_list'                 => __('Categories list', 'webads-business-directory'),
+        'items_list_navigation'      => __('Categories list navigation', 'webads-business-directory'),
+    );
+    
+    $args = array(
+        'labels'                     => $labels,
+        'hierarchical'               => false,
+        'public'                     => true,
+        'show_ui'                    => true,
+        'show_admin_column'          => true,
+        'show_in_nav_menus'          => true,
+        'show_tagcloud'              => true,
+        'show_in_rest'               => true,
+    );
+    
+    register_taxonomy('business_category', array('business'), $args);
+    
+    // Create default "Uncategorized" term if it doesn't exist
+    if (!term_exists('Uncategorized', 'business_category')) {
+        wp_insert_term('Uncategorized', 'business_category', array(
+            'description' => 'Default category for businesses',
+            'slug'        => 'uncategorized'
+        ));
+    }
+}
+
+/**
+ * Register Custom Post Types.
+ */
 function business_post_types()
 {
 

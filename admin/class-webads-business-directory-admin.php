@@ -167,6 +167,12 @@ function business_meta_callback_function($args)
     $vimeo = esc_attr(get_post_meta(get_the_ID(), 'business_vimeo', true));
     $details = esc_attr(get_post_meta(get_the_ID(), 'business_details', true));
 
+    // Get current category
+    $current_category = '';
+    $terms = get_the_terms(get_the_ID(), 'business_category');
+    if ($terms && !is_wp_error($terms)) {
+        $current_category = $terms[0]->term_id;
+    }
 
     //The markup for your meta box goes here
 
@@ -247,6 +253,37 @@ function business_meta_callback_function($args)
 
     <div id="messages" class="notice notice-error frm_error_style"  style="display: none;">
         <p>There was a problem with your submission. City and State fields are required.</p>
+    </div>
+
+    <div class="business-meta-div">
+        <label for="business_category" class="business-meta-label">Category <span class="frm_required">*</span></label>
+        <?php
+        // Get all business categories
+        $categories = get_terms(array(
+            'taxonomy' => 'business_category',
+            'hide_empty' => false,
+        ));
+        
+        if (!empty($categories) && !is_wp_error($categories)) {
+            echo '<select id="business_category" name="business_category" class="widefat">';
+            foreach ($categories as $category) {
+                echo '<option value="' . esc_attr($category->term_id) . '" ' . selected($current_category, $category->term_id, false) . '>' . esc_html($category->name) . '</option>';
+            }
+            echo '</select>';
+        } else {
+            echo '<p>No categories found. Please add some categories first.</p>';
+        }
+        
+        if ($parentid !== '' && $parentid !== 'add') {
+            $oterms = get_the_terms($parentid, 'business_category');
+            if ($oterms && !is_wp_error($oterms)) {
+                $ocategory = $oterms[0]->name;
+                if ($current_category && $ocategory && $ocategory !== get_term($current_category, 'business_category')->name) {
+                    echo '<span class="business-o-value">' . esc_html($ocategory) . '</span>';
+                }
+            }
+        }
+        ?>
     </div>
 
     <div class="business-meta-div">
@@ -636,6 +673,12 @@ function save_business()
         update_post_meta($post->ID, "business_vimeo", $_POST["business_vimeo"]);
         update_post_meta($post->ID, "business_details", $_POST["business_details"]);
 
+        // Save business category
+        if (isset($_POST['business_category'])) {
+            $category_id = intval($_POST['business_category']);
+            wp_set_object_terms($post->ID, $category_id, 'business_category');
+        }
+
         // Clear cache for business directory page
         global $wpdb;
 
@@ -744,6 +787,7 @@ add_action('current_screen', 'webads_business_current_screen');
 add_action('admin_menu', 'webads_business_admin_menu');
 function webads_business_admin_menu()
 {
+    add_submenu_page('edit.php?post_type=business', 'Categories', 'Categories', 'publish_posts', 'edit-tags.php?taxonomy=business_category&post_type=business');
     add_submenu_page('edit.php?post_type=business', 'All Sponsors', 'All Sponsors', 'publish_posts', 'edit.php?post_type=business_sponsor');
     add_submenu_page('edit.php?post_type=business', 'Add Sponsor', 'Add Sponsor', 'publish_posts', 'post-new.php?post_type=business_sponsor');
     add_submenu_page('edit.php?post_type=business', 'Settings', 'Settings', 'publish_posts', 'webads-business-settings', 'webads_business_settings');

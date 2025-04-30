@@ -181,10 +181,9 @@ get_header();
                             $args = array(
                                 'post_type' => array('business'),
                                 'post_status' => array('publish'),
-                                'nopaging' => true,
+                                'posts_per_page' => -1,
+                                'orderby' => 'title',
                                 'order' => 'ASC',
-                                'orderby' => 'meta_value title',
-                                'meta_key' => 'business_city',
                             );
 
                             // The Query
@@ -192,8 +191,15 @@ get_header();
 
                             // The Loop
                             if ($businesses->have_posts()) {
+                                // Initialize an array to store businesses by category
+                                $businesses_by_category = array();
+                                
+                                // Group businesses by category
                                 while ($businesses->have_posts()) {
                                     $businesses->the_post();
+                                    
+                                    // Get business details
+                                    $details = get_post_meta(get_the_id(), 'business_details', true);
                                     $address = get_post_meta(get_the_id(), 'business_address', true);
                                     $city = get_post_meta(get_the_id(), 'business_city', true);
                                     $state = get_post_meta(get_the_id(), 'business_state', true);
@@ -206,117 +212,148 @@ get_header();
                                     $instagram = get_post_meta(get_the_id(), 'business_instagram', true);
                                     $youtube = get_post_meta(get_the_id(), 'business_youtube', true);
                                     $vimeo = get_post_meta(get_the_id(), 'business_vimeo', true);
-                                    $details = get_post_meta(get_the_id(), 'business_details', true);
-
-                                    if ($city !== $c_city) {
-                                        echo '</div><h2>' . $city . '</h2><div class="business-accordion">';
+                                    
+                                    // Get business category
+                                    $category_name = 'Uncategorized';
+                                    $category_id = 0;
+                                    $terms = get_the_terms(get_the_id(), 'business_category');
+                                    if ($terms && !is_wp_error($terms)) {
+                                        $category_name = $terms[0]->name;
+                                        $category_id = $terms[0]->term_id;
                                     }
-                                    $c_city = $city;
-                                    ?>
+                                    
+                                    // Store business data in the array
+                                    if (!isset($businesses_by_category[$category_id])) {
+                                        $businesses_by_category[$category_id] = array(
+                                            'name' => $category_name,
+                                            'businesses' => array()
+                                        );
+                                    }
+                                    
+                                    $businesses_by_category[$category_id]['businesses'][] = array(
+                                        'id' => get_the_id(),
+                                        'title' => get_the_title(),
+                                        'details' => $details,
+                                        'address' => $address,
+                                        'city' => $city,
+                                        'state' => $state,
+                                        'zip' => $zip,
+                                        'phone' => $phone,
+                                        'email' => $email,
+                                        'website' => $website,
+                                        'facebook' => $facebook,
+                                        'x' => $x,
+                                        'instagram' => $instagram,
+                                        'youtube' => $youtube,
+                                        'vimeo' => $vimeo
+                                    );
+                                }
+                                
+                                // Display businesses grouped by category
+                                foreach ($businesses_by_category as $category_id => $category_data) {
+                                    echo '<h2>' . esc_html($category_data['name']) . '</h2>';
+                                    echo '<div class="business-accordion">';
+                                    
+                                    foreach ($category_data['businesses'] as $business) {
+                                        ?>
+                                        <h4><?php echo esc_html($business['title']); ?><i class="fa fa-angle-down"></i></h4>
 
-                                    <h4><?php the_title(); ?><i class="fa fa-angle-down"></i>
-                                    </h4>
-
-                                    <div>
-                                        <div class="row">
-                                            <div class="col-sm-6 business-col1">
-                                                <?php
-                                                if (!empty($address)) {
-                                                    echo $address . "</br>" . $city . ", " . $state . " " . $zip;
-                                                }
-                                                if (!empty($phone)) {
-                                                    echo '</br><a href="tel:' . $phone . '">' . $phone . '</a>';
-                                                }
-                                                if (!empty($email)) {
-                                                    echo '<div><a href="mailto:' . $email . '">' . $email . '</a></div>';
-                                                }
-
-
-                                                ?>
-                                            </div>
-                                            <div class="col-sm-6 business-col2">
-
-                                                <div class="fl-icon-group fl-icon-group-center">
-
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-sm-6 business-col1">
                                                     <?php
-                                                    if (!empty($facebook)) { ?>
-                                                        <span class="fl-icon">
-                                                        <a href="<?php echo $facebook ?>" target="_blank">
-                                                                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-facebook.png' ?>"
-                                                                     alt="Facebook">
-                                                        </a>
-                                                    </span>
-                                                    <?php } ?>
-                                                    <?php
-                                                    if (!empty($x)) { ?>
-                                                        <span class="fl-icon">
-                                                        <a href="<?php echo $x ?>" target="_blank">
-                                                                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-x.png' ?>"
-                                                                     alt="X">
-                                                        </a>
-                                                    </span>
-                                                    <?php } ?>
-                                                    <?php
-                                                    if (!empty($instagram)) { ?>
-                                                        <span class="fl-icon">
-                                                        <a href="<?php echo $instagram ?>" target="_blank">
-                                                                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-instagram.png' ?>"
-                                                                     alt="Instagram">
-                                                        </a>
-                                                    </span>
-                                                    <?php } ?>
-                                                    <?php
-                                                    if (!empty($youtube)) { ?>
-                                                        <span class="fl-icon">
-                                                        <a href="<?php echo $youtube ?>" target="_blank">
-                                                                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-youtube.png' ?>"
-                                                                     alt="YouTube">
-                                                        </a>
-                                                    </span>
-                                                    <?php } ?>
-                                                    <?php
-                                                    if (!empty($vimeo)) { ?>
-                                                        <span class="fl-icon">
-                                                        <a href="<?php echo $vimeo ?>" target="_blank">
-                                                                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-vimeo.png' ?>"
-                                                                     alt="Vimeo">
-                                                        </a>
-                                                    </span>
-                                                    <?php } ?>
-                                                    <?php
-                                                    if (!empty($address)) { ?>
-                                                        <span class="fl-icon">
-                                                        <a href="https://www.google.com/maps/place/<?php echo urlencode($address . ' ' . $city . ' ' . $state . ' ' . $zip) ?>"
-                                                           target="_blank">
-                                                                <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-map.png' ?>"
-                                                                     alt="Map">
-                                                        </a>
-                                                    </span>
-                                                    <?php } ?>
+                                                    if (!empty($business['address'])) {
+                                                        echo esc_html($business['address']) . "</br>" . esc_html($business['city']) . ", " . esc_html($business['state']) . " " . esc_html($business['zip']);
+                                                    }
+                                                    if (!empty($business['phone'])) {
+                                                        echo '</br><a href="tel:' . esc_attr($business['phone']) . '">' . esc_html($business['phone']) . '</a>';
+                                                    }
+                                                    if (!empty($business['email'])) {
+                                                        echo '<div><a href="mailto:' . esc_attr($business['email']) . '">' . esc_html($business['email']) . '</a></div>';
+                                                    }
+                                                    ?>
+                                                </div>
+                                                <div class="col-sm-6 business-col2">
 
+                                                    <div class="fl-icon-group fl-icon-group-center">
+
+                                                        <?php
+                                                        if (!empty($business['facebook'])) { ?>
+                                                            <span class="fl-icon">
+                                                            <a href="<?php echo esc_url($business['facebook']); ?>" target="_blank">
+                                                                    <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-facebook.png' ?>"
+                                                                         alt="Facebook">
+                                                            </a>
+                                                        </span>
+                                                        <?php } ?>
+                                                        <?php
+                                                        if (!empty($business['x'])) { ?>
+                                                            <span class="fl-icon">
+                                                            <a href="<?php echo esc_url($business['x']); ?>" target="_blank">
+                                                                    <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-x.png' ?>"
+                                                                         alt="X">
+                                                            </a>
+                                                        </span>
+                                                        <?php } ?>
+                                                        <?php
+                                                        if (!empty($business['instagram'])) { ?>
+                                                            <span class="fl-icon">
+                                                            <a href="<?php echo esc_url($business['instagram']); ?>" target="_blank">
+                                                                    <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-instagram.png' ?>"
+                                                                         alt="Instagram">
+                                                            </a>
+                                                        </span>
+                                                        <?php } ?>
+                                                        <?php
+                                                        if (!empty($business['youtube'])) { ?>
+                                                            <span class="fl-icon">
+                                                            <a href="<?php echo esc_url($business['youtube']); ?>" target="_blank">
+                                                                    <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-youtube.png' ?>"
+                                                                         alt="YouTube">
+                                                            </a>
+                                                        </span>
+                                                        <?php } ?>
+                                                        <?php
+                                                        if (!empty($business['vimeo'])) { ?>
+                                                            <span class="fl-icon">
+                                                            <a href="<?php echo esc_url($business['vimeo']); ?>" target="_blank">
+                                                                    <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-vimeo.png' ?>"
+                                                                         alt="Vimeo">
+                                                            </a>
+                                                        </span>
+                                                        <?php } ?>
+                                                        <?php
+                                                        if (!empty($business['address'])) { ?>
+                                                            <span class="fl-icon">
+                                                            <a href="https://www.google.com/maps/place/<?php echo urlencode($business['address'] . ' ' . $business['city'] . ' ' . $business['state'] . ' ' . $business['zip']) ?>"
+                                                               target="_blank">
+                                                                    <img src="<?php echo plugin_dir_url(__FILE__) . 'images/icon-map.png' ?>"
+                                                                         alt="Map">
+                                                            </a>
+                                                        </span>
+                                                        <?php } ?>
+
+                                                    </div>
+                                                    <?php
+                                                    if (!empty($business['website'])) {
+                                                        echo '<div><a href="' . esc_url($business['website']) . '" target="_blank" class="business-website">view our website</a></div>';
+                                                    }
+                                                    ?>
                                                 </div>
                                                 <?php
-
-                                                if (!empty($website)) {
-                                                    echo '<div><a href="' . $website . '" target="_blank" class="business-website">view our website</a></div>';
+                                                if (!empty($business['details'])) {
+                                                    echo '<div class="col-sm-12" style="text-align: center;"><h4 style="text-decoration: underline;" align="center">Details</h4>' . wpautop($business['details']) . '</div>';
                                                 }
                                                 ?>
                                             </div>
-                                            <?php
-                                            if (!empty($details)) {
-                                                echo '<div class="col-sm-12" style="text-align: center;"><h4 style="text-decoration: underline;" align="center">Details</h4>' . wpautop($details) . '</div>';
-                                            }
-                                            ?>
+                                            <div class="business-edit"><a
+                                                        href="<?php echo site_url(); ?>/business-directory-update?cid=<?php echo $business['id']; ?>">update
+                                                    this information</a></div>
                                         </div>
-                                        <div class="business-edit"><a
-                                                    href="<?php echo site_url(); ?>/business-directory-update?cid=<?php echo get_the_id() ?>">update
-                                                this information</a></div>
-                                    </div>
-
-
-                                    <?php
-                                    //echo 'yes';
-                                    // do something
+                                        <?php
+                                    }
+                                    
+                                    echo '</div>';
                                 }
                             } else {
                                 // no posts found
@@ -325,8 +362,6 @@ get_header();
 
                             // Restore original Post Data
                             wp_reset_postdata();
-
-
                             ?>
 
                         </div>
