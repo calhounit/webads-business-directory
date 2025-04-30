@@ -172,6 +172,12 @@ function business_meta_callback_function($args)
     $terms = get_the_terms(get_the_ID(), 'business_category');
     if ($terms && !is_wp_error($terms)) {
         $current_category = $terms[0]->term_id;
+    } else {
+        // Default to Uncategorized if no category is set
+        $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+        if ($uncategorized) {
+            $current_category = $uncategorized->term_id;
+        }
     }
 
     //The markup for your meta box goes here
@@ -677,6 +683,12 @@ function save_business()
         if (isset($_POST['business_category'])) {
             $category_id = intval($_POST['business_category']);
             wp_set_object_terms($post->ID, $category_id, 'business_category');
+        } else {
+            // Default to Uncategorized if no category is selected
+            $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+            if ($uncategorized) {
+                wp_set_object_terms($post->ID, $uncategorized->term_id, 'business_category');
+            }
         }
 
         // Clear cache for business directory page
@@ -794,7 +806,11 @@ function webads_business_admin_menu()
     //remove_submenu_page( 'edit.php?post_type=business', 'post-new.php?post_type=business' );
 }
 
-
+// Remove default category meta box
+add_action('admin_menu', 'business_remove_category_meta_box');
+function business_remove_category_meta_box() {
+    remove_meta_box('tagsdiv-business_category', 'business', 'side');
+}
 
 function webads_business_settings()
 {

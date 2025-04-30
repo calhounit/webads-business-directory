@@ -151,6 +151,7 @@ function business_register_taxonomy() {
         'show_in_nav_menus'          => true,
         'show_tagcloud'              => true,
         'show_in_rest'               => true,
+        'show_in_menu'               => false, // Hide the default menu item
     );
     
     register_taxonomy('business_category', array('business'), $args);
@@ -174,7 +175,7 @@ function business_post_types()
     $labels = array(
         'name' => _x('Businesses', 'Post Type General Name', 'text_domain'),
         'singular_name' => _x('Business', 'Post Type Singular Name', 'text_domain'),
-        'menu_name' => __('Business Directory', 'text_domain'),
+        'menu_name' => __('Business Listings', 'text_domain'),
         'name_admin_bar' => __('Business', 'text_domain'),
         'archives' => __('Item Archives', 'text_domain'),
         'attributes' => __('Item Attributes', 'text_domain'),
@@ -210,7 +211,7 @@ function business_post_types()
         'show_ui' => true,
         'show_in_menu' => true,
         'menu_position' => 25,
-        'menu_icon' => 'dashicons-admin-multisite',
+        'menu_icon' => 'dashicons-businessperson',
         'show_in_admin_bar' => false,
         'show_in_nav_menus' => false,
         'can_export' => true,
