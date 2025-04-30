@@ -1,0 +1,128 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+
+
+.business-accordion {
+    margin: 20px auto;
+}
+
+.business-accordion .ui-accordion-content {
+    width: 100%;
+    /*background-color: #f3f3f3;*/
+    /*color: #777;*/
+    font-size: 10pt;
+    line-height: 16pt;
+
+    border: 1px solid #dddddd;
+    background: #ffffff;
+    color: #333333;
+    border-bottom-left-radius: 3px;
+}
+
+.business-accordion .ui-accordion-content > * {
+    margin: 0;
+    padding-top: 10px;
+    padding-bottom: 3px;
+}
+
+
+
+.business-accordion .ui-accordion-header {
+    background-color: #ccc;
+    padding: 10px;
+    cursor: pointer;
+    background-image: -moz-linear-gradient(top,  #f3f3f3 0%, #e7e7e7 100%); /* FF3.6+ */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e7e7e7), color-stop(100%,#dc621e)); /* Chrome,Safari4+ */
+    background-image: -webkit-linear-gradient(top,  #f3f3f3 0%,#e7e7e7 100%); /* Chrome10+,Safari5.1+ */
+    background-image: -o-linear-gradient(top,  #f3f3f3 0%,#e7e7e7 100%); /* Opera 11.10+ */
+    background-image: -ms-linear-gradient(top,  #f3f3f3 0%,#e7e7e7 100%); /* IE10+ */
+    background-image: linear-gradient(to bottom,  #f3f3f3 0%,#e7e7e7 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3f3f3', endColorstr='#e7e7e7',GradientType=0 ); /* IE6-9 */
+    border: 1px solid #dddddd;
+    border-top-left-radius: 3px;
+    margin-bottom: 0px;
+}
+
+.business-accordion .ui-accordion-header a {
+    color: #fff;
+    line-height: 42px;
+    display: block;
+    font-size: 12pt;
+    width: 100%;
+    text-indent: 10px;
+}
+
+.business-accordion h4 i { 
+    position: absolute;
+    right: 40px;
+    /*top:14px;*/
+    -webkit-transition: all 300ms ease-in 0s;
+    -moz-transition: all 300ms ease-in 0s;
+    -o-transition: all 300ms ease-in 0s;
+    transition: all 300ms ease-in 0s;
+}
+
+.business-accordion .ui-state-active i {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.business-accordion .business-col2 {
+    text-align: center;
+}
+
+.business-edit {
+    text-align: right;
+    padding: 15px;
+}
+
+a.business-website {
+    font-size: 20px;
+}
+
+#business-sponsors div, #business-general-info {
+    margin-bottom: 20px;
+}
+
+#business-sponsors div {
+    text-align: center;
+}
+
+
+.fl-icon-group .fl-icon {
+    display: inline-block;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.fl-icon {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.fl-icon i {
+    float: left;
+    font-size: 30px;
+    height: auto;
+    width: auto;
+}
+
+
+.business-notice {
+    background-color: #F2DEDE;
+    border-left: 4px solid #dc3232;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    margin: 5px 0px 5px;
+    padding: 1px 12px;
+}
+
+.business-notice p {
+    margin: 10px;
+}
