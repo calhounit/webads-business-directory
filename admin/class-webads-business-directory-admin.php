@@ -165,7 +165,7 @@ function business_meta_callback_function($args)
     $instagram = esc_attr(get_post_meta(get_the_ID(), 'business_instagram', true));
     $youtube = esc_attr(get_post_meta(get_the_ID(), 'business_youtube', true));
     $vimeo = esc_attr(get_post_meta(get_the_ID(), 'business_vimeo', true));
-    $services = esc_attr(get_post_meta(get_the_ID(), 'business_services', true));
+    $details = esc_attr(get_post_meta(get_the_ID(), 'business_details', true));
 
 
     //The markup for your meta box goes here
@@ -392,15 +392,15 @@ function business_meta_callback_function($args)
         ?>
     </div>
     <div class="business-meta-div">
-        <label for="business_services" class="business-meta-label">Service Times (one service per line)</label>
-        <textarea id="business_services" class="widefat" name="business_services" rows="6"><?php echo $services; ?></textarea>
+        <label for="business_details" class="business-meta-label">Details (one item per line)</label>
+        <textarea id="business_details" class="widefat" name="business_details" rows="6"><?php echo $details; ?></textarea>
         <?php if ($parentid !== '' && $parentid !== 'add') {
-            $oservices = get_post_meta($parentid, 'business_services', true);
-            if ($oservices !== $services) {
-                if ($oservices == '') {
-                    $oservices = 'blank';
+            $odetails = get_post_meta($parentid, 'business_details', true);
+            if ($odetails !== $details) {
+                if ($odetails == '') {
+                    $odetails = 'blank';
                 }
-                echo '<span class="business-o-value">' . wpautop($oservices) . '</span>';
+                echo '<span class="business-o-value">' . nl2br($odetails) . '</span>';
             }
         }
         ?>
@@ -634,7 +634,7 @@ function save_business()
         update_post_meta($post->ID, "business_instagram", $_POST["business_instagram"]);
         update_post_meta($post->ID, "business_youtube", $_POST["business_youtube"]);
         update_post_meta($post->ID, "business_vimeo", $_POST["business_vimeo"]);
-        update_post_meta($post->ID, "business_services", $_POST["business_services"]);
+        update_post_meta($post->ID, "business_details", $_POST["business_details"]);
 
         // Clear cache for business directory page
         global $wpdb;

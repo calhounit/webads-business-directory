@@ -81,7 +81,7 @@ get_header();
                             $instagram = $_POST['field_instagram'];
                             $youtube = $_POST['field_youtube'];
                             $vimeo = $_POST['field_vimeo'];
-                            $services = $_POST['field_services'];
+                            $details = $_POST['field_details'];
 
                             $author = get_user_by('login', 'superadmin');
 
@@ -113,7 +113,7 @@ get_header();
                             add_post_meta($post_id, 'business_instagram', $instagram);
                             add_post_meta($post_id, 'business_youtube', $youtube);
                             add_post_meta($post_id, 'business_vimeo', $vimeo);
-                            add_post_meta($post_id, 'business_services', $services);
+                            add_post_meta($post_id, 'business_details', $details);
 
                             $options = get_option('webads_business');
                             $submission_email = $options['submission_email'];
@@ -161,7 +161,7 @@ get_header();
                             $instagram = get_post_meta($postid, 'business_instagram', true);
                             $youtube = get_post_meta($postid, 'business_youtube', true);
                             $vimeo = get_post_meta($postid, 'business_vimeo', true);
-                            $services = get_post_meta($postid, 'business_services', true);
+                            $details = get_post_meta($postid, 'business_details', true);
                         }
 
 
@@ -494,11 +494,11 @@ get_header();
                                                     <input type="text" id="field_email" name="field_email"
                                                            value="<?php echo $email ?>">
                                                 </div>
-                                                <div id="frm_services_container"
+                                                <div id="frm_details_container"
                                                      class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
-                                                    <label for="field_services" id="field_services_label"
-                                                           class="frm_primary_label">Service Times (one service per line)</label>
-                                                    <textarea id="field_services" name="field_services" rows="6"><?php echo $services ?></textarea>
+                                                    <label for="field_details" id="field_details_label"
+                                                           class="frm_primary_label">Details (one item per line)</label>
+                                                    <textarea id="field_details" name="field_details" rows="6"><?php echo $details ?></textarea>
                                                 </div>
                                                 <div id="messages" class="business-notice business-notice-error">
                                                     <p>Please include http:// or https:// for all URLs</p>

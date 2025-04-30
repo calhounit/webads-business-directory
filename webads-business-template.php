@@ -206,7 +206,7 @@ get_header();
                                     $instagram = get_post_meta(get_the_id(), 'business_instagram', true);
                                     $youtube = get_post_meta(get_the_id(), 'business_youtube', true);
                                     $vimeo = get_post_meta(get_the_id(), 'business_vimeo', true);
-                                    $services = get_post_meta(get_the_id(), 'business_services', true);
+                                    $details = get_post_meta(get_the_id(), 'business_details', true);
 
                                     if ($city !== $c_city) {
                                         echo '</div><h2>' . $city . '</h2><div class="business-accordion">';
@@ -303,8 +303,8 @@ get_header();
                                                 ?>
                                             </div>
                                             <?php
-                                            if (!empty($services)) {
-                                                echo '<div class="col-sm-12" style="text-align: center;"><h4 style="text-decoration: underline;" align="center">Business Hours</h4>' . wpautop($services) . '</div>';
+                                            if (!empty($details)) {
+                                                echo '<div class="col-sm-12" style="text-align: center;"><h4 style="text-decoration: underline;" align="center">Details</h4>' . wpautop($details) . '</div>';
                                             }
                                             ?>
                                         </div>
