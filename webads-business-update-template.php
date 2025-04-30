@@ -68,7 +68,6 @@ get_header();
                             $parentid = $_POST['field_parentid'];
                             $submitname = $_POST['field_submitname'];
                             $submitemail = $_POST['field_submitemail'];
-                            $title = $_POST['field_title'];
                             $denomination = $_POST['field_denomination'];
                             $address = $_POST['field_address'];
                             $city = $_POST['field_city'];
@@ -102,7 +101,6 @@ get_header();
                             add_post_meta($post_id, 'business_parentid', $parentid);
                             add_post_meta($post_id, 'business_submitname', $submitname);
                             add_post_meta($post_id, 'business_submitemail', $submitemail);
-                            add_post_meta($post_id, 'business_denomination', $denomination);
                             add_post_meta($post_id, 'business_address', $address);
                             add_post_meta($post_id, 'business_city', $city);
                             add_post_meta($post_id, 'business_state', $state);
@@ -293,13 +291,6 @@ get_header();
                                                            data-invmsg="This field cannot be blank">
                                                 </div>
                                                 <div id="frm_denomination_container"
-                                                     class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
-                                                    <label for="field_denomination" id="field_denomination_label"
-                                                           class="frm_primary_label">Denomination</label>
-                                                    <input type="text" id="field_denomination" name="field_denomination"
-                                                           value="<?php echo $denomination ?>">
-                                                </div>
-                                                <div id="frm_address_container"
                                                      class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
                                                     <label for="field_address" id="field_address_label"
                                                            class="frm_primary_label">Address</label>

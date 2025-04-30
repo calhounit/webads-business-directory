@@ -154,7 +154,6 @@ function business_meta_callback_function($args)
     $vimeolink = '&nbsp;&nbsp;&nbsp;<a id="business_vimeo_link" href="' . esc_attr(get_post_meta(get_the_ID(), 'business_vimeo', true)) . '" target="_blank">visit</a>';
     $state = get_post_meta(get_the_ID(), 'business_state', true);
     $parentid = get_post_meta(get_the_ID(), 'business_parentid', true);
-    $denomination = esc_attr(get_post_meta(get_the_ID(), 'business_denomination', true));
     $address = esc_attr(get_post_meta(get_the_ID(), 'business_address', true));
     $city = esc_attr(get_post_meta(get_the_ID(), 'business_city', true));
     $zip = esc_attr(get_post_meta(get_the_ID(), 'business_zip', true));
@@ -250,21 +249,6 @@ function business_meta_callback_function($args)
         <p>There was a problem with your submission. City and State fields are required.</p>
     </div>
 
-    <div class="business-meta-div">
-        <label for="business_denomination" class="business-meta-label">Denomination</label>
-        <input id="business_denomination" type="text" class="widefat" name="business_denomination"
-               value="<?php echo $denomination ?>">
-        <?php if ($parentid !== '' && $parentid !== 'add') {
-            $odenomination = get_post_meta($parentid, 'business_denomination', true);
-            if ($odenomination !== $denomination) {
-                if ($odenomination == '') {
-                    $odenomination = 'blank';
-                }
-                echo '<span class="business-o-value">' . $odenomination . '</span>';
-            }
-        }
-        ?>
-    </div>
     <div class="business-meta-div">
         <label for="business_address" class="business-meta-label">Address</label>
         <input id="business_address" type="text" class="widefat" name="business_address"
@@ -638,7 +622,6 @@ function save_business()
     }
 
     if ($post->post_type === 'business'){
-        update_post_meta($post->ID, "business_denomination", $_POST["business_denomination"]);
         update_post_meta($post->ID, "business_address", $_POST["business_address"]);
         update_post_meta($post->ID, "business_city", trim($_POST["business_city"]));
         update_post_meta($post->ID, "business_state", $_POST["business_state"]);
@@ -723,7 +706,7 @@ function save_business()
 }
 
 // define the get_sample_permalink_html callback
-function filter_get_sample_permalink_html($return, $post_id, $new_title, $new_slug, $post)
+function business_filter_get_sample_permalink_html($return, $post_id, $new_title, $new_slug, $post)
 {
     // make filter magic happen here...
     if ($post->post_type == 'business' or $post->post_type == 'business_sponsor') {
@@ -736,7 +719,7 @@ function filter_get_sample_permalink_html($return, $post_id, $new_title, $new_sl
 ;
 
 // add the filter
-add_filter('get_sample_permalink_html', 'filter_get_sample_permalink_html', 10, 5);
+add_filter('get_sample_permalink_html', 'business_filter_get_sample_permalink_html', 10, 5);
 
 
 // attempt to manipulate dom of core events admin screens

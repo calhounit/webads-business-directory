@@ -194,7 +194,6 @@ get_header();
                             if ($businesses->have_posts()) {
                                 while ($businesses->have_posts()) {
                                     $businesses->the_post();
-                                    $denomination = get_post_meta(get_the_id(), 'business_denomination', true);
                                     $address = get_post_meta(get_the_id(), 'business_address', true);
                                     $city = get_post_meta(get_the_id(), 'business_city', true);
                                     $state = get_post_meta(get_the_id(), 'business_state', true);
@@ -216,16 +215,12 @@ get_header();
                                     ?>
 
                                     <h4><?php the_title(); ?><i class="fa fa-angle-down"></i>
-                                        <div style="font-size: 12px;"><?php echo $denomination ?></div>
                                     </h4>
 
                                     <div>
                                         <div class="row">
                                             <div class="col-sm-6 business-col1">
                                                 <?php
-                                                if (!empty($denomination)) {
-                                                    //echo $denomination . '</br></br>';
-                                                }
                                                 if (!empty($address)) {
                                                     echo $address . "</br>" . $city . ", " . $state . " " . $zip;
                                                 }
