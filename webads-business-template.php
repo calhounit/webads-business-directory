@@ -142,6 +142,7 @@ get_header();
                             //information
                             $general_info = $options['general_info'];
                             $sponsor_info = $options['sponsor_info'];
+                            $allow_public_submissions = isset($options['allow_public_submissions']) ? $options['allow_public_submissions'] : 0;
 
 
                             echo wpautop($general_info);
@@ -157,20 +158,22 @@ get_header();
                         <div id="business-sponsor-info">
                             <?php echo wpautop($sponsor_info); ?>
                         </div>
+                        <?php if ($allow_public_submissions) { ?>
                         <p>
                         <div class="business-edit">
 
-
+                            
                             <div>
                                 <a href="<?php echo site_url(); ?>/business-directory-update?cid=add" target="_self"
                                    class="fl-button" role="button" style="padding: 15px; font-size: 14px;">
                                     add my business
                                 </a>
                             </div>
-
+                          
 
                         </div>
                         </p>
+                        <?php } ?>
                         <div>
 
                             <?php
@@ -346,9 +349,11 @@ get_header();
                                                 }
                                                 ?>
                                             </div>
+                                            <?php if ($allow_public_submissions) { ?>
                                             <div class="business-edit"><a
                                                         href="<?php echo site_url(); ?>/business-directory-update?cid=<?php echo $business['id']; ?>">update
                                                     this information</a></div>
+                                            <?php } ?>
                                         </div>
                                         <?php
                                     }

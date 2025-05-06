@@ -23,6 +23,9 @@ get_header();
                             <?php
                             if ($_GET['cid'] == 'add') {
                                 echo 'Submit A New Business';
+                                // Default to "Uncategorized" for new businesses
+$uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+$current_category = $uncategorized ? $uncategorized->term_id : '';
                             } else {
                                 echo 'Submit Business Update';
                             }
@@ -68,7 +71,7 @@ get_header();
                             $parentid = $_POST['field_parentid'];
                             $submitname = $_POST['field_submitname'];
                             $submitemail = $_POST['field_submitemail'];
-                            $denomination = $_POST['field_denomination'];
+                            $category = $_POST['field_category'];
                             $address = $_POST['field_address'];
                             $city = $_POST['field_city'];
                             $state = $_POST['field_state'];
@@ -114,6 +117,17 @@ get_header();
                             add_post_meta($post_id, 'business_youtube', $youtube);
                             add_post_meta($post_id, 'business_vimeo', $vimeo);
                             add_post_meta($post_id, 'business_details', $details);
+                            
+                            // Set the business category
+                            if (!empty($category)) {
+                                wp_set_object_terms($post_id, intval($category), 'business_category');
+                            } else {
+                                // Default to "Uncategorized" if no category is selected
+                                $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+    if ($uncategorized) {
+        wp_set_object_terms($post_id, $uncategorized->term_id, 'business_category');
+    }
+}
 
                             $options = get_option('webads_business');
                             $submission_email = $options['submission_email'];
@@ -148,7 +162,6 @@ get_header();
                             $postid = $_GET['cid'];
                             $post = get_post($postid);
                             $title = $post->post_title;
-                            $denomination = get_post_meta($postid, 'business_denomination', true);
                             $address = get_post_meta($postid, 'business_address', true);
                             $city = get_post_meta($postid, 'business_city', true);
                             $state = get_post_meta($postid, 'business_state', true);
@@ -162,6 +175,9 @@ get_header();
                             $youtube = get_post_meta($postid, 'business_youtube', true);
                             $vimeo = get_post_meta($postid, 'business_vimeo', true);
                             $details = get_post_meta($postid, 'business_details', true);
+                            // Get the current category
+$current_terms = wp_get_object_terms($postid, 'business_category', array('fields' => 'ids'));
+$current_category = !empty($current_terms) ? $current_terms[0] : '';
                         }
 
 
@@ -290,10 +306,34 @@ get_header();
                                                            aria-required="true"
                                                            data-invmsg="This field cannot be blank">
                                                 </div>
-                                                <div id="frm_denomination_container"
+                                                <!-- Business Category Field -->
+                                                <div id="frm_category_container" class="frm_form_field form-field frm_required_field frm_top_container frm_full">
+                                                    <label for="field_category" id="field_category_label" class="frm_primary_label">Business Category
+                                                        <span class="frm_required">*</span>
+                                                    </label>
+                                                    <select id="field_category" name="field_category" aria-required="true">
+                                                        <?php
+                                                        // Get all business categories
+                                                        $categories = get_terms(array(
+                                                            'taxonomy' => 'business_category',
+                                                            'hide_empty' => false,
+                                                        ));
+                                                        
+                                                        if (!empty($categories) && !is_wp_error($categories)) {
+                                                            foreach ($categories as $category) {
+                                                                $selected = ($current_category == $category->term_id) ? ' selected="selected"' : '';
+                                                                echo '<option value="' . $category->term_id . '"' . $selected . '>' . $category->name . '</option>';
+                                                            }
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                                <div id="frm_address_container"
                                                      class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
                                                     <label for="field_address" id="field_address_label"
-                                                           class="frm_primary_label">Address</label>
+                                                           class="frm_primary_label">Address
+                                                    <span class="frm_required">*</span>
+                                                    </label>
                                                     <input type="text" id="field_address" name="field_address"
                                                            value="<?php echo $address ?>">
                                                 </div>
@@ -309,6 +349,7 @@ get_header();
                                                            aria-required="true"
                                                            data-invmsg="This field cannot be blank">
                                                 </div>
+                                                
                                                 <div id="frm_state_container"
                                                      class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
                                                     <label for="field_state" id="field_state_label"
@@ -497,7 +538,7 @@ get_header();
                                                 <div id="frm_details_container"
                                                      class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
                                                     <label for="field_details" id="field_details_label"
-                                                           class="frm_primary_label">Details (one item per line)</label>
+                                                           class="frm_primary_label">Details</label>
                                                     <textarea id="field_details" name="field_details" rows="6"><?php echo $details ?></textarea>
                                                 </div>
                                                 <div id="messages" class="business-notice business-notice-error">

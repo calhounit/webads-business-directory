@@ -435,7 +435,7 @@ function business_meta_callback_function($args)
         ?>
     </div>
     <div class="business-meta-div">
-        <label for="business_details" class="business-meta-label">Details (one item per line)</label>
+        <label for="business_details" class="business-meta-label">Details</label>
         <textarea id="business_details" class="widefat" name="business_details" rows="6"><?php echo $details; ?></textarea>
         <?php if ($parentid !== '' && $parentid !== 'add') {
             $odetails = get_post_meta($parentid, 'business_details', true);
@@ -814,17 +814,34 @@ function business_remove_category_meta_box() {
 
 function webads_business_settings()
 {
+    $error_message = '';
+    
     if (isset($_POST['general_info'])) {
         //load options
         $options = get_option('webads_business');
-        $options['submission_email'] = $_POST['submission_email'];
-        $options['general_info'] = $_POST['general_info'];
-        $options['sponsor_info'] = $_POST['sponsor_info'];
-        update_option('webads_business', $options);
+        $allow_public_submissions = isset($_POST['allow_public_submissions']) ? 1 : 0;
+        
+        // Validate email if public submissions are allowed
+        if ($allow_public_submissions && empty($_POST['submission_email'])) {
+            $error_message = '<div class="error"><p><strong>Error:</strong> Email address is required when public submissions are allowed.</p></div>';
+        } else {
+            $options['allow_public_submissions'] = $allow_public_submissions;
+            $options['submission_email'] = $_POST['submission_email'];
+            $options['general_info'] = $_POST['general_info'];
+            $options['sponsor_info'] = $_POST['sponsor_info'];
+            update_option('webads_business', $options);
+            
+            if ($allow_public_submissions) {
+                $error_message = '<div class="updated"><p>Settings saved. Public submissions will be sent to: ' . esc_html($_POST['submission_email']) . '</p></div>';
+            } else {
+                $error_message = '<div class="updated"><p>Settings saved.</p></div>';
+            }
+        }
     }
 
 
     $options = get_option('webads_business');
+    $allow_public_submissions = isset($options['allow_public_submissions']) ? $options['allow_public_submissions'] : 0;
     $submission_email = $options['submission_email'];
     $general_info = $options['general_info'];
     $sponsor_info = $options['sponsor_info'];
@@ -835,6 +852,8 @@ function webads_business_settings()
     <div>
         <h1>Business Directory Settings</h1>
         <hr/>
+        
+        <?php if (!empty($error_message)) echo $error_message; ?>
 
         <form method="POST">
 
@@ -842,13 +861,22 @@ function webads_business_settings()
             <table class="widefat" style="margin-top: .5em">
                 <tbody>
                 <tr>
-
+                    <td>
+                        <h3>Allow public submissions</h3>
+                        <label for="allow_public_submissions">
+                            <input type="checkbox" id="allow_public_submissions" name="allow_public_submissions" value="1" <?php checked(1, $allow_public_submissions); ?> />
+                            Allow visitors to submit business listings for review
+                        </label>
+                    </td>
+                </tr>
+                <tr id="submission_email_row" <?php echo $allow_public_submissions ? '' : 'style="display:none;"'; ?>>
                     <td>
                         <h3>Email Address For Submissions</h3>
                         <label for="submission_email"><input tabindex="1" id="submission_email" name="submission_email"
                                                              type="text" size="50" class="search-input"
                                                              value="<?php echo $submission_email; ?>"
                                                              autocomplete="off"/></label>
+                        <p class="description" id="email-required-message" style="color: #d63638; <?php echo $allow_public_submissions ? '' : 'display:none;'; ?>">This field is required when public submissions are allowed.</p>
                     </td>
                 </tr>
                 <tr>
@@ -879,6 +907,33 @@ function webads_business_settings()
 
     </div>
 
+    <?php
+    
+    // Add JavaScript to toggle the email field visibility and handle validation
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('#allow_public_submissions').change(function() {
+            if($(this).is(':checked')) {
+                $('#submission_email_row').show();
+                $('#email-required-message').show();
+            } else {
+                $('#submission_email_row').hide();
+                $('#email-required-message').hide();
+            }
+        });
+        
+        // Client-side validation
+        $('form').submit(function(e) {
+            if($('#allow_public_submissions').is(':checked') && $('#submission_email').val() === '') {
+                e.preventDefault();
+                alert('Email address is required when public submissions are allowed.');
+                $('#submission_email').focus();
+                return false;
+            }
+        });
+    });
+    </script>
     <?php
 }
 
