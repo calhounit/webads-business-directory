@@ -685,9 +685,9 @@ function save_business()
             wp_set_object_terms($post->ID, $category_id, 'business_category');
         } else {
             // Default to Uncategorized if no category is selected
-            $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
-            if ($uncategorized) {
-                wp_set_object_terms($post->ID, $uncategorized->term_id, 'business_category');
+            $uncategorized_term = get_term_by('slug', 'uncategorized', 'business_category');
+            if ($uncategorized_term) {
+                wp_set_object_terms($post->ID, $uncategorized_term->term_id, 'business_category');
             }
         }
 
@@ -815,16 +815,104 @@ function business_remove_category_meta_box() {
 function webads_business_settings()
 {
     $error_message = '';
+    $default_categories = array(
+        'Restaurants',
+        'Retail & Shopping',
+        'Health & Wellness',
+        'Beauty & Personal Care',
+        'Automotive Services',
+        'Home & Repair Services',
+        'Professional Services',
+        'Real Estate',
+        'Finance & Insurance',
+        'Legal Services',
+        'Education & Childcare',
+        'Fitness & Recreation',
+        'Pet Services',
+        'Lodging & Travel',
+        'Community & Faith'
+    );
     
     if (isset($_POST['general_info'])) {
         //load options
         $options = get_option('webads_business');
         $allow_public_submissions = isset($_POST['allow_public_submissions']) ? 1 : 0;
+        $use_default_categories = isset($_POST['use_default_categories']) ? 1 : 0;
+        
+        // Handle default categories
+        $previous_use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
+        
+        // If setting changed, take appropriate action
+        if ($previous_use_default_categories != $use_default_categories) {
+            if ($use_default_categories) {
+                // Add default categories
+                foreach ($default_categories as $category_name) {
+                    // Check if category already exists
+                    $existing_term = get_term_by('name', $category_name, 'business_category');
+                    if (!$existing_term) {
+                        // Create the category
+                        wp_insert_term($category_name, 'business_category');
+                    }
+                }
+            } else {
+                // Remove default categories and reassign posts
+                $uncategorized_term_object = get_term_by('name', 'Uncategorized', 'business_category');
+                $uncategorized_id = null; // Initialize to null
+
+                // Create Uncategorized if it doesn't exist
+                if (!$uncategorized_term_object) {
+                    $term_creation_result = wp_insert_term('Uncategorized', 'business_category', array('description' => 'Default category for businesses.'));
+                    if (!is_wp_error($term_creation_result)) {
+                        $uncategorized_id = $term_creation_result['term_id'];
+                    } else {
+                        // Optionally, log error: $term_creation_result->get_error_message();
+                        // If Uncategorized cannot be created or found, we cannot proceed with reassignment.
+                    }
+                } else {
+                    $uncategorized_id = $uncategorized_term_object->term_id;
+                }
+                
+                // Make sure we have a valid term ID for Uncategorized
+                if ($uncategorized_id) {
+                    // Process each default category
+                    foreach ($default_categories as $category_name) {
+                        $term = get_term_by('name', $category_name, 'business_category');
+                        if ($term && !is_wp_error($term)) {
+                            $term_id = $term->term_id;
+                            
+                            // Get posts in this category
+                            $posts = get_posts(array(
+                                'post_type' => 'business',
+                                'numberposts' => -1,
+                                'tax_query' => array(
+                                    array(
+                                        'taxonomy' => 'business_category',
+                                        'field' => 'term_id',
+                                        'terms' => $term_id
+                                    )
+                                )
+                            ));
+                            
+                            // Since business listings only have one category, we can directly reassign them
+                            // without checking for other categories
+                            foreach ($posts as $post) {
+                                // Remove all existing term assignments and set only to Uncategorized
+                                wp_set_object_terms($post->ID, $uncategorized_id, 'business_category', false);
+                            }
+                            
+                            // Delete the category after reassigning posts
+                            wp_delete_term($term_id, 'business_category');
+                        }
+                    }
+                }
+            }
+        }
         
         // Validate email if public submissions are allowed
         if ($allow_public_submissions && empty($_POST['submission_email'])) {
             $error_message = '<div class="error"><p><strong>Error:</strong> Email address is required when public submissions are allowed.</p></div>';
         } else {
+            $options['use_default_categories'] = $use_default_categories;
             $options['allow_public_submissions'] = $allow_public_submissions;
             $options['submission_email'] = $_POST['submission_email'];
             $options['general_info'] = $_POST['general_info'];
@@ -841,12 +929,12 @@ function webads_business_settings()
 
 
     $options = get_option('webads_business');
+    $use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
     $allow_public_submissions = isset($options['allow_public_submissions']) ? $options['allow_public_submissions'] : 0;
     $submission_email = $options['submission_email'];
     $general_info = $options['general_info'];
     $sponsor_info = $options['sponsor_info'];
     $settings = array('media_buttons' => false, 'textarea_rows' => 10);
-
 
     ?>
     <div>
@@ -860,6 +948,19 @@ function webads_business_settings()
 
             <table class="widefat" style="margin-top: .5em">
                 <tbody>
+                <tr>
+                    <td>
+                        <h3>Use default categories</h3>
+                        <label for="use_default_categories">
+                            <input type="checkbox" id="use_default_categories" name="use_default_categories" value="1" <?php checked(1, $use_default_categories); ?> />
+                            Add a set of default business categories
+                        </label>
+                        <p class="description">
+                            When checked, the plugin will create a standard set of business categories.<br>
+                            When unchecked, default categories will be removed and businesses will be reassigned to "Uncategorized".
+                        </p>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <h3>Allow public submissions</h3>
@@ -908,7 +1009,6 @@ function webads_business_settings()
     </div>
 
     <?php
-    
     // Add JavaScript to toggle the email field visibility and handle validation
     ?>
     <script type="text/javascript">
