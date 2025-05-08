@@ -112,6 +112,48 @@ run_webads_business_directory();
 // Register Custom Post Types
 add_action('init', 'business_post_types');
 
+/**
+ * Customize taxonomy messages for business_category
+ */
+add_filter('term_updated_messages', 'business_category_updated_messages');
+function business_category_updated_messages($messages) {
+    $messages['business_category'] = array(
+        0 => '',
+        1 => __('Category updated.'),
+        2 => __('Custom field updated.'),
+        3 => __('Custom field deleted.'),
+        4 => __('Category updated.'),
+        5 => isset($_GET['revision']) ? sprintf(__('Category restored to revision from %s'), wp_post_revision_title((int) $_GET['revision'], false)) : false,
+        6 => __('Category published.'),
+        7 => __('Category saved.'),
+        8 => __('Category submitted.'),
+        9 => sprintf(
+            __('Category scheduled for: <strong>%1$s</strong>.'),
+            date_i18n(__('M j, Y @ G:i'), strtotime(isset($_POST['post_date']) ? $_POST['post_date'] : ''))
+        ),
+        10 => __('Category draft updated.'),
+    );
+    return $messages;
+}
+
+/**
+ * Change the "Go to Tags" link text for business categories
+ */
+add_filter('admin_print_footer_scripts', 'business_category_change_tag_link_text');
+function business_category_change_tag_link_text() {
+    $screen = get_current_screen();
+    if ($screen && $screen->taxonomy === 'business_category') {
+        ?>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            // Change the "Go to Tags" link text
+            $('.updated a').text('← Go to Categories');
+        });
+        </script>
+        <?php
+    }
+}
+
 // Register Custom Taxonomy for Business Categories
 add_action('init', 'business_register_taxonomy');
 

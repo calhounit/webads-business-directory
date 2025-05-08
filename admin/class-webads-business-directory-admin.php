@@ -801,13 +801,52 @@ add_action('admin_menu', 'webads_business_admin_menu');
 // Register the Business Directory menu meta box
 add_action('admin_head-nav-menus.php', 'business_add_menu_meta_box');
 
+/**
+ * Check if the current user should see the Business Listings admin menu items
+ * based on their role and the plugin settings
+ *
+ * @return bool True if the user should see the menu items, false otherwise
+ */
+function should_user_see_business_menu() {
+    global $current_user;
+    
+    // Always show to superadmin and iadsadmin users
+    if ($current_user->user_login === 'superadmin' || $current_user->user_login === 'iadsadmin') {
+        return true;
+    }
+    
+    // Check the setting for editors
+    $options = get_option('webads_business');
+    $show_menu_to_editors = isset($options['show_menu_to_editors']) ? $options['show_menu_to_editors'] : 0;
+    
+    // If the setting is enabled and user is an editor, show the menu
+    if ($show_menu_to_editors && current_user_can('editor')) {
+        return true;
+    }
+    
+    // Otherwise, don't show the menu
+    return false;
+}
+
 function webads_business_admin_menu()
 {
+    // Check if the current user should see the Business Listings menu items
+    if (!should_user_see_business_menu()) {
+        // If not, remove the main Business Listings menu
+        remove_menu_page('edit.php?post_type=business');
+        return;
+    }
+    
+    // Add submenu items
     add_submenu_page('edit.php?post_type=business', 'Categories', 'Categories', 'publish_posts', 'edit-tags.php?taxonomy=business_category&post_type=business');
     add_submenu_page('edit.php?post_type=business', 'All Sponsors', 'All Sponsors', 'publish_posts', 'edit.php?post_type=business_sponsor');
     add_submenu_page('edit.php?post_type=business', 'Add Sponsor', 'Add Sponsor', 'publish_posts', 'post-new.php?post_type=business_sponsor');
-    add_submenu_page('edit.php?post_type=business', 'Settings', 'Settings', 'publish_posts', 'webads-business-settings', 'webads_business_settings');
-    //remove_submenu_page( 'edit.php?post_type=business', 'post-new.php?post_type=business' );
+    
+    // Only add Settings for superadmin and iadsadmin users
+    global $current_user;
+    if ($current_user->user_login === 'superadmin' || $current_user->user_login === 'iadsadmin') {
+        add_submenu_page('edit.php?post_type=business', 'Settings', 'Settings', 'publish_posts', 'webads-business-settings', 'webads_business_settings');
+    }
 }
 
 // Remove default category meta box
@@ -849,6 +888,7 @@ function webads_business_settings()
     if (isset($_POST['general_info'])) {
         //load options
         $options = get_option('webads_business');
+        $show_menu_to_editors = isset($_POST['show_menu_to_editors']) ? 1 : 0;
         $allow_public_submissions = isset($_POST['allow_public_submissions']) ? 1 : 0;
         $use_default_categories = isset($_POST['use_default_categories']) ? 1 : 0;
         $create_demo_listings = isset($_POST['create_demo_listings']) ? 1 : 0;
@@ -1101,6 +1141,7 @@ function webads_business_settings()
         if ($allow_public_submissions && empty($_POST['submission_email'])) {
             $error_message = '<div class="error"><p><strong>Error:</strong> Email address is required when public submissions are allowed.</p></div>';
         } else {
+            $options['show_menu_to_editors'] = $show_menu_to_editors;
             $options['use_default_categories'] = $use_default_categories;
             $options['create_demo_listings'] = $create_demo_listings;
             $options['create_demo_sponsors'] = $create_demo_sponsors;
@@ -1120,6 +1161,7 @@ function webads_business_settings()
 
 
     $options = get_option('webads_business');
+    $show_menu_to_editors = isset($options['show_menu_to_editors']) ? $options['show_menu_to_editors'] : 0;
     $use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
     $create_demo_listings = isset($options['create_demo_listings']) ? $options['create_demo_listings'] : 0;
     $create_demo_sponsors = isset($options['create_demo_sponsors']) ? $options['create_demo_sponsors'] : 0;
@@ -1142,6 +1184,15 @@ function webads_business_settings()
            
             <table class="form-table" role="presentation">
                 <tbody>
+                <tr valign="top">
+                    <th scope="row">Show admin menu items to editors</th>
+                    <td>
+                        <label for="show_menu_to_editors">
+                            <input type="checkbox" name="show_menu_to_editors" id="show_menu_to_editors" value="1" <?php echo $show_menu_to_editors ? 'checked="checked"' : ''; ?> />
+                            When checked, users with the Editor role will see Business Listings admin menu items. When unchecked, only superadmin and iadsadmin users will see these menu items.
+                        </label>
+                    </td>
+                </tr>
                 <tr valign="top">
                     <th scope="row">Use default categories</th>
                     <td>
