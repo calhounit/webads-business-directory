@@ -16,7 +16,7 @@
  * Plugin Name:       WebAds Business Directory
  * Plugin URI:        http://www.iadsnetwork.com
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.3.0
+ * Version:           1.0.0
  * Author:            John Calhoun
  * Author URI:        http://www.iadsnetwork.com
  * License:           GPL-2.0+
@@ -26,19 +26,6 @@
  *
  * RELEASE NOTES
  * 1.0.0 - initial release
- * 1.0.1 - bug fix to trim spaces from business city
- * 1.0.2 - bug fix
- * 1.0.3 - permission change for business sponsor menu items
- * 1.0.4 - bug fix
- * 1.0.5 - added details field
- * 1.0.6 - added required fields to update form
- * 1.0.7 - bug fix
- * 1.0.8 - added required fields in admin edit/add business
- * 1.0.9 - added caching support for sponsors (may still need to clear cache after CRUD operation, not sure)
- * 1.1.0 - js changes to support js merge when caching
- * 1.1.1 - bug fix for borlabs
- * 1.2.0 - refactored twitter to x
- * 1.3.0 - added categories feature
  */
 
 // If this file is called directly, abort.

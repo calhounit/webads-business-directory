@@ -68,6 +68,7 @@ $current_category = $uncategorized ? $uncategorized->term_id : '';
                         if ($response && $response->success) {
                             // validation succeeded, user input is correct
                             // process form data
+                            $title = $_POST['field_title'];
                             $parentid = $_POST['field_parentid'];
                             $submitname = $_POST['field_submitname'];
                             $submitemail = $_POST['field_submitemail'];
@@ -319,10 +320,28 @@ $current_category = !empty($current_terms) ? $current_terms[0] : '';
                                                             'hide_empty' => false,
                                                         ));
                                                         
+                                                        // Make sure we have the uncategorized term ID for new submissions
+                                                        if ($_GET['cid'] == 'add' && empty($current_category)) {
+                                                            $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+                                                            $current_category = $uncategorized ? $uncategorized->term_id : '';
+                                                        }
+                                                        
                                                         if (!empty($categories) && !is_wp_error($categories)) {
+                                                            // First, add Uncategorized at the top of the list
                                                             foreach ($categories as $category) {
-                                                                $selected = ($current_category == $category->term_id) ? ' selected="selected"' : '';
-                                                                echo '<option value="' . $category->term_id . '"' . $selected . '>' . $category->name . '</option>';
+                                                                if ($category->slug === 'uncategorized') {
+                                                                    $selected = ($current_category == $category->term_id) ? ' selected="selected"' : '';
+                                                                    echo '<option value="' . $category->term_id . '"' . $selected . '>' . $category->name . '</option>';
+                                                                    break;
+                                                                }
+                                                            }
+                                                            
+                                                            // Then add all other categories
+                                                            foreach ($categories as $category) {
+                                                                if ($category->slug !== 'uncategorized') {
+                                                                    $selected = ($current_category == $category->term_id) ? ' selected="selected"' : '';
+                                                                    echo '<option value="' . $category->term_id . '"' . $selected . '>' . $category->name . '</option>';
+                                                                }
                                                             }
                                                         }
                                                         ?>

@@ -1152,7 +1152,7 @@ function webads_business_settings()
             update_option('webads_business', $options);
             
             if ($allow_public_submissions) {
-                $error_message = '<div class="updated"><p>Settings saved. Public submissions will be sent to: ' . esc_html($_POST['submission_email']) . '</p></div>';
+                $error_message = '<div class="updated"><p>Settings saved.</p></div>';
             } else {
                 $error_message = '<div class="updated"><p>Settings saved.</p></div>';
             }
