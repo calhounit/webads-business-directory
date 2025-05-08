@@ -1,52 +1,52 @@
 [
   {
     "title": "Bella's Italian Restaurant",
-    "filename": "bellas-italian-restaurant.jpg",
+    "filename": "bellas-italian-restaurant.png",
     "url": "https://example.com/bellasitalian"
   },
   {
     "title": "Tech Haven Electronics",
-    "filename": "tech-haven-electronics.jpg",
+    "filename": "tech-haven-electronics.png",
     "url": "https://example.com/techhaven"
   },
   {
     "title": "Wellness Center & Spa",
-    "filename": "wellness-center-spa.jpg",
+    "filename": "wellness-center-spa.png",
     "url": "https://example.com/wellnesscenter"
   },
   {
     "title": "Glamour Beauty Salon",
-    "filename": "glamour-beauty-salon.jpg",
+    "filename": "glamour-beauty-salon.png",
     "url": "https://example.com/glamourbeauty"
   },
   {
     "title": "Quick Fix Auto Repair",
-    "filename": "quick-fix-auto.jpg",
+    "filename": "quick-fix-auto.png",
     "url": "https://example.com/quickfixauto"
   },
   {
     "title": "Handyman Heroes",
-    "filename": "handyman-heroes.jpg",
+    "filename": "handyman-heroes.png",
     "url": "https://example.com/handymanheroes"
   },
   {
     "title": "Johnson & Associates Law Firm",
-    "filename": "johnson-law-firm.jpg",
+    "filename": "johnson-law-firm.png",
     "url": "https://example.com/johnsonlaw"
   },
   {
     "title": "ABC Realty Group",
-    "filename": "abc-realty-group.jpg",
+    "filename": "abc-realty-group.png",
     "url": "https://example.com/abcrealty"
   },
   {
     "title": "Precision Accounting Services",
-    "filename": "precision-accounting.jpg",
+    "filename": "precision-accounting.png",
     "url": "https://example.com/precisionacct"
   },
   {
     "title": "Luxury Home Specialists",
-    "filename": "luxury-home-specialists.jpg",
+    "filename": "luxury-home-specialists.png",
     "url": "https://example.com/luxuryhomes"
   }
 ]

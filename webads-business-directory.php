@@ -148,7 +148,7 @@ function business_register_taxonomy() {
         'public'                     => true,
         'show_ui'                    => true,
         'show_admin_column'          => true,
-        'show_in_nav_menus'          => true,
+        'show_in_nav_menus'          => false, // Hide from nav menu editor
         'show_tagcloud'              => true,
         'show_in_rest'               => true,
         'show_in_menu'               => false, // Hide the default menu item

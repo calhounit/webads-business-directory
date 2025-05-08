@@ -797,6 +797,10 @@ function webads_business_current_screen()
 add_action('current_screen', 'webads_business_current_screen');
 
 add_action('admin_menu', 'webads_business_admin_menu');
+
+// Register the Business Directory menu meta box
+add_action('admin_head-nav-menus.php', 'business_add_menu_meta_box');
+
 function webads_business_admin_menu()
 {
     add_submenu_page('edit.php?post_type=business', 'Categories', 'Categories', 'publish_posts', 'edit-tags.php?taxonomy=business_category&post_type=business');
@@ -893,7 +897,7 @@ function webads_business_settings()
                                 
                                 if (!is_wp_error($post_id)) {
                                     // Add sponsor details with full image path
-                                    $image_url = plugins_url('/images/' . $sponsor['filename'], dirname(plugin_dir_path(__FILE__)));
+                                    $image_url = plugins_url('webads-business-directory/images/' . $sponsor['filename'], dirname(plugin_dir_path(__FILE__)));
                                     update_post_meta($post_id, 'sponsor_image', $image_url);
                                     update_post_meta($post_id, 'sponsor_url', $sponsor['url']);
                                     update_post_meta($post_id, 'sponsor_newwindow', 1); // Open in new window
@@ -1242,9 +1246,9 @@ function webads_business_settings()
  * @param object $object The meta box object
  * @link https://developer.wordpress.org/reference/functions/add_meta_box/
  */
-function business_add_menu_meta_box($object)
+function business_add_menu_meta_box($object = null)
 {
-    add_meta_box('custom-menu-metabox', __('Business Directory'), 'business_menu_metabox', 'nav-menus', 'side', 'default');
+    add_meta_box('business-directory-menu-metabox', __('Business Directory'), 'business_menu_metabox', 'nav-menus', 'side', 'default');
     return $object;
 }
 
@@ -1295,9 +1299,9 @@ function business_menu_metabox($object, $args)
         'page-tab',
         '_wpnonce',
     ); ?>
-    <div id="my-plugin-div">
-    <div id="tabs-panel-my-plugin-all" class="tabs-panel tabs-panel-active">
-        <ul id="my-plugin-checklist-pop" class="categorychecklist form-no-clear">
+    <div id="business-directory-div">
+    <div id="tabs-panel-business-directory-all" class="tabs-panel tabs-panel-active">
+        <ul id="business-directory-checklist-pop" class="categorychecklist form-no-clear">
             <?php echo walk_nav_menu_tree(array_map('wp_setup_nav_menu_item', $my_items), 0, (object)array('walker' => $walker)); ?>
         </ul>
 
@@ -1311,13 +1315,13 @@ function business_menu_metabox($object, $args)
                     ),
                     remove_query_arg($removed_args)
                 ));
-                ?>#my-menu-test-metabox" class="select-all"><?php _e('Select All'); ?></a>
+                ?>#business-directory-menu-metabox" class="select-all"><?php _e('Select All'); ?></a>
 			</span>
 
             <span class="add-to-menu">
 				<input type="submit"<?php wp_nav_menu_disabled_check($nav_menu_selected_id); ?>
                        class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e('Add to Menu'); ?>"
-                       name="add-my-plugin-menu-item" id="submit-my-plugin-div"/>
+                       name="add-business-directory-menu-item" id="submit-business-directory-div"/>
 				<span class="spinner"></span>
 			</span>
         </p>
