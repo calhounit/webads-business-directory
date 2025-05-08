@@ -848,12 +848,78 @@ function webads_business_settings()
         $allow_public_submissions = isset($_POST['allow_public_submissions']) ? 1 : 0;
         $use_default_categories = isset($_POST['use_default_categories']) ? 1 : 0;
         $create_demo_listings = isset($_POST['create_demo_listings']) ? 1 : 0;
+        $create_demo_sponsors = isset($_POST['create_demo_sponsors']) ? 1 : 0;
         
         // Handle default categories
         $previous_use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
         
         // Handle demo listings
         $previous_create_demo_listings = isset($options['create_demo_listings']) ? $options['create_demo_listings'] : 0;
+        
+        // Handle demo sponsors
+        $previous_create_demo_sponsors = isset($options['create_demo_sponsors']) ? $options['create_demo_sponsors'] : 0;
+        
+        // If demo sponsors setting changed, take appropriate action
+        if ($previous_create_demo_sponsors != $create_demo_sponsors) {
+            if ($create_demo_sponsors) {
+                // Check if demo sponsors already exist to avoid duplicates
+                $existing_demo_sponsors = get_posts(array(
+                    'post_type' => 'business_sponsor',
+                    'numberposts' => 1,
+                    'meta_key' => '_webads_is_demo_sponsor',
+                    'meta_value' => 'true'
+                ));
+                
+                // Only create demo sponsors if none exist
+                if (empty($existing_demo_sponsors)) {
+                    // Read the demo sponsors JSON file
+                    $json_file_path = plugin_dir_path(__FILE__) . 'data/demo-sponsors.json';
+                    if (file_exists($json_file_path)) {
+                        $json_data = file_get_contents($json_file_path);
+                        $demo_sponsors = json_decode($json_data, true);
+                        
+                        if ($demo_sponsors && is_array($demo_sponsors)) {
+                            foreach ($demo_sponsors as $sponsor) {
+                                // Create a new sponsor
+                                $post_data = array(
+                                    'post_title'    => $sponsor['title'],
+                                    'post_content'  => '',
+                                    'post_status'   => 'publish',
+                                    'post_type'     => 'business_sponsor'
+                                );
+                                
+                                // Insert the post
+                                $post_id = wp_insert_post($post_data);
+                                
+                                if (!is_wp_error($post_id)) {
+                                    // Add sponsor details with full image path
+                                    $image_url = plugins_url('/images/' . $sponsor['filename'], dirname(plugin_dir_path(__FILE__)));
+                                    update_post_meta($post_id, 'sponsor_image', $image_url);
+                                    update_post_meta($post_id, 'sponsor_url', $sponsor['url']);
+                                    update_post_meta($post_id, 'sponsor_newwindow', 1); // Open in new window
+                                    update_post_meta($post_id, 'sponsor_sort', 1); // Default sort order
+                                    
+                                    // Mark as demo sponsor for future identification
+                                    update_post_meta($post_id, '_webads_is_demo_sponsor', 'true');
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Remove all demo sponsors
+                $demo_sponsors = get_posts(array(
+                    'post_type' => 'business_sponsor',
+                    'numberposts' => -1,
+                    'meta_key' => '_webads_is_demo_sponsor',
+                    'meta_value' => 'true'
+                ));
+                
+                foreach ($demo_sponsors as $sponsor) {
+                    wp_delete_post($sponsor->ID, true); // true = bypass trash
+                }
+            }
+        }
         
         // If demo listings setting changed, take appropriate action
         if ($previous_create_demo_listings != $create_demo_listings) {
@@ -1033,6 +1099,7 @@ function webads_business_settings()
         } else {
             $options['use_default_categories'] = $use_default_categories;
             $options['create_demo_listings'] = $create_demo_listings;
+            $options['create_demo_sponsors'] = $create_demo_sponsors;
             $options['allow_public_submissions'] = $allow_public_submissions;
             $options['submission_email'] = $_POST['submission_email'];
             $options['general_info'] = $_POST['general_info'];
@@ -1051,6 +1118,7 @@ function webads_business_settings()
     $options = get_option('webads_business');
     $use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
     $create_demo_listings = isset($options['create_demo_listings']) ? $options['create_demo_listings'] : 0;
+    $create_demo_sponsors = isset($options['create_demo_sponsors']) ? $options['create_demo_sponsors'] : 0;
     $allow_public_submissions = isset($options['allow_public_submissions']) ? $options['allow_public_submissions'] : 0;
     $submission_email = $options['submission_email'];
     $general_info = $options['general_info'];
@@ -1067,7 +1135,7 @@ function webads_business_settings()
         <form method="POST">
 
 
-            <h3>Business Directory Options</h3>
+           
             <table class="form-table" role="presentation">
                 <tbody>
                 <tr valign="top">
@@ -1085,6 +1153,15 @@ function webads_business_settings()
                         <label for="create_demo_listings">
                             <input type="checkbox" name="create_demo_listings" id="create_demo_listings" value="1" <?php echo $create_demo_listings ? 'checked="checked"' : ''; ?> />
                             When checked, approximately 25 demo business listings will be created across various categories. When unchecked, all demo listings will be permanently removed.
+                        </label>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Create demo sponsors</th>
+                    <td>
+                        <label for="create_demo_sponsors">
+                            <input type="checkbox" name="create_demo_sponsors" id="create_demo_sponsors" value="1" <?php echo $create_demo_sponsors ? 'checked="checked"' : ''; ?> />
+                            When checked, 10 demo sponsors will be created based on selected business listings. When unchecked, all demo sponsors will be permanently removed.
                         </label>
                     </td>
                 </tr>

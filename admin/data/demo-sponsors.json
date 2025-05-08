@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Bella's Italian Restaurant",
+    "filename": "bellas-italian-restaurant.jpg",
+    "url": "https://example.com/bellasitalian"
+  },
+  {
+    "title": "Tech Haven Electronics",
+    "filename": "tech-haven-electronics.jpg",
+    "url": "https://example.com/techhaven"
+  },
+  {
+    "title": "Wellness Center & Spa",
+    "filename": "wellness-center-spa.jpg",
+    "url": "https://example.com/wellnesscenter"
+  },
+  {
+    "title": "Glamour Beauty Salon",
+    "filename": "glamour-beauty-salon.jpg",
+    "url": "https://example.com/glamourbeauty"
+  },
+  {
+    "title": "Quick Fix Auto Repair",
+    "filename": "quick-fix-auto.jpg",
+    "url": "https://example.com/quickfixauto"
+  },
+  {
+    "title": "Handyman Heroes",
+    "filename": "handyman-heroes.jpg",
+    "url": "https://example.com/handymanheroes"
+  },
+  {
+    "title": "Johnson & Associates Law Firm",
+    "filename": "johnson-law-firm.jpg",
+    "url": "https://example.com/johnsonlaw"
+  },
+  {
+    "title": "ABC Realty Group",
+    "filename": "abc-realty-group.jpg",
+    "url": "https://example.com/abcrealty"
+  },
+  {
+    "title": "Precision Accounting Services",
+    "filename": "precision-accounting.jpg",
+    "url": "https://example.com/precisionacct"
+  },
+  {
+    "title": "Luxury Home Specialists",
+    "filename": "luxury-home-specialists.jpg",
+    "url": "https://example.com/luxuryhomes"
+  }
+]
