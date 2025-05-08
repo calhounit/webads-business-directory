@@ -833,16 +833,135 @@ function webads_business_settings()
         'Community & Faith'
     );
     
+    // Social media platforms for random assignment to demo listings
+    $social_media_platforms = array(
+        'facebook' => 'https://facebook.com/',
+        'x' => 'https://x.com/',
+        'instagram' => 'https://instagram.com/',
+        'youtube' => 'https://youtube.com/c/',
+        'vimeo' => 'https://vimeo.com/'
+    );
+    
     if (isset($_POST['general_info'])) {
         //load options
         $options = get_option('webads_business');
         $allow_public_submissions = isset($_POST['allow_public_submissions']) ? 1 : 0;
         $use_default_categories = isset($_POST['use_default_categories']) ? 1 : 0;
+        $create_demo_listings = isset($_POST['create_demo_listings']) ? 1 : 0;
         
         // Handle default categories
         $previous_use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
         
-        // If setting changed, take appropriate action
+        // Handle demo listings
+        $previous_create_demo_listings = isset($options['create_demo_listings']) ? $options['create_demo_listings'] : 0;
+        
+        // If demo listings setting changed, take appropriate action
+        if ($previous_create_demo_listings != $create_demo_listings) {
+            if ($create_demo_listings) {
+                // Check if demo listings already exist to avoid duplicates
+                $existing_demo_listings = get_posts(array(
+                    'post_type' => 'business',
+                    'numberposts' => 1,
+                    'meta_key' => '_webads_is_demo_listing',
+                    'meta_value' => 'true'
+                ));
+                
+                // Only create demo listings if none exist
+                if (empty($existing_demo_listings)) {
+                    // Read the demo listings JSON file
+                    $json_file_path = plugin_dir_path(__FILE__) . 'data/demo-listings.json';
+                    if (file_exists($json_file_path)) {
+                        $json_data = file_get_contents($json_file_path);
+                        $demo_listings = json_decode($json_data, true);
+                        
+                        if ($demo_listings && is_array($demo_listings)) {
+                            foreach ($demo_listings as $listing) {
+                                // Create a new business listing
+                                $post_data = array(
+                                    'post_title'    => $listing['name'],
+                                    'post_content'  => '',
+                                    'post_status'   => 'publish',
+                                    'post_type'     => 'business'
+                                );
+                                
+                                // Insert the post
+                                $post_id = wp_insert_post($post_data);
+                                
+                                if (!is_wp_error($post_id)) {
+                                    // Set category
+                                    $category_term = get_term_by('slug', sanitize_title($listing['category_slug']), 'business_category');
+                                    if (!$category_term) {
+                                        // If category doesn't exist, try to find it by name (converting slug to name)
+                                        $category_name = str_replace('-', ' ', $listing['category_slug']);
+                                        $category_name = ucwords($category_name);
+                                        $category_term = get_term_by('name', $category_name, 'business_category');
+                                        
+                                        // If still not found, create it
+                                        if (!$category_term) {
+                                            $term_result = wp_insert_term($category_name, 'business_category');
+                                            if (!is_wp_error($term_result)) {
+                                                $category_id = $term_result['term_id'];
+                                            } else {
+                                                // Default to uncategorized if creation fails
+                                                $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+                                                $category_id = $uncategorized ? $uncategorized->term_id : 0;
+                                            }
+                                        } else {
+                                            $category_id = $category_term->term_id;
+                                        }
+                                    } else {
+                                        $category_id = $category_term->term_id;
+                                    }
+                                    
+                                    // Assign category
+                                    if ($category_id) {
+                                        wp_set_object_terms($post_id, $category_id, 'business_category');
+                                    }
+                                    
+                                    // Add business details
+                                    update_post_meta($post_id, 'business_address', $listing['address']['street']);
+                                    update_post_meta($post_id, 'business_city', $listing['address']['city']);
+                                    update_post_meta($post_id, 'business_state', $listing['address']['state']);
+                                    update_post_meta($post_id, 'business_zip', $listing['address']['zip']);
+                                    update_post_meta($post_id, 'business_phone', $listing['phone']);
+                                    update_post_meta($post_id, 'business_website', $listing['website']);
+                                    update_post_meta($post_id, 'business_details', $listing['details']);
+                                    
+                                    // Randomly assign 1-3 social media platforms
+                                    $num_socials = rand(1, 3);
+                                    $social_keys = array_keys($social_media_platforms);
+                                    shuffle($social_keys);
+                                    $selected_socials = array_slice($social_keys, 0, $num_socials);
+                                    
+                                    foreach ($selected_socials as $social) {
+                                        $business_slug = sanitize_title($listing['name']);
+                                        $social_url = $social_media_platforms[$social] . $business_slug;
+                                        update_post_meta($post_id, 'business_' . $social, $social_url);
+                                    }
+                                    
+                                    // Mark as demo listing for future identification
+                                    update_post_meta($post_id, '_webads_is_demo_listing', 'true');
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Remove all demo listings
+                $demo_listings = get_posts(array(
+                    'post_type' => 'business',
+                    'numberposts' => -1,
+                    'meta_key' => '_webads_is_demo_listing',
+                    'meta_value' => 'true'
+                ));
+                
+                foreach ($demo_listings as $listing) {
+                    wp_delete_post($listing->ID, true); // true = bypass trash
+                }
+            }
+        }
+        
+        // If default categories setting changed, take appropriate action
         if ($previous_use_default_categories != $use_default_categories) {
             if ($use_default_categories) {
                 // Add default categories
@@ -913,6 +1032,7 @@ function webads_business_settings()
             $error_message = '<div class="error"><p><strong>Error:</strong> Email address is required when public submissions are allowed.</p></div>';
         } else {
             $options['use_default_categories'] = $use_default_categories;
+            $options['create_demo_listings'] = $create_demo_listings;
             $options['allow_public_submissions'] = $allow_public_submissions;
             $options['submission_email'] = $_POST['submission_email'];
             $options['general_info'] = $_POST['general_info'];
@@ -930,6 +1050,7 @@ function webads_business_settings()
 
     $options = get_option('webads_business');
     $use_default_categories = isset($options['use_default_categories']) ? $options['use_default_categories'] : 0;
+    $create_demo_listings = isset($options['create_demo_listings']) ? $options['create_demo_listings'] : 0;
     $allow_public_submissions = isset($options['allow_public_submissions']) ? $options['allow_public_submissions'] : 0;
     $submission_email = $options['submission_email'];
     $general_info = $options['general_info'];
@@ -946,51 +1067,52 @@ function webads_business_settings()
         <form method="POST">
 
 
-            <table class="widefat" style="margin-top: .5em">
+            <h3>Business Directory Options</h3>
+            <table class="form-table" role="presentation">
                 <tbody>
-                <tr>
+                <tr valign="top">
+                    <th scope="row">Use default categories</th>
                     <td>
-                        <h3>Use default categories</h3>
                         <label for="use_default_categories">
-                            <input type="checkbox" id="use_default_categories" name="use_default_categories" value="1" <?php checked(1, $use_default_categories); ?> />
-                            Add a set of default business categories
+                            <input type="checkbox" name="use_default_categories" id="use_default_categories" value="1" <?php echo $use_default_categories ? 'checked="checked"' : ''; ?> />
+                            When checked, a set of default business categories will be created. When unchecked, default categories will be removed and businesses will be reassigned to "Uncategorized".
                         </label>
-                        <p class="description">
-                            When checked, the plugin will create a standard set of business categories.<br>
-                            When unchecked, default categories will be removed and businesses will be reassigned to "Uncategorized".
-                        </p>
                     </td>
                 </tr>
-                <tr>
+                <tr valign="top">
+                    <th scope="row">Create demo business listings</th>
                     <td>
-                        <h3>Allow public submissions</h3>
+                        <label for="create_demo_listings">
+                            <input type="checkbox" name="create_demo_listings" id="create_demo_listings" value="1" <?php echo $create_demo_listings ? 'checked="checked"' : ''; ?> />
+                            When checked, approximately 25 demo business listings will be created across various categories. When unchecked, all demo listings will be permanently removed.
+                        </label>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Allow public submissions</th>
+                    <td>
                         <label for="allow_public_submissions">
                             <input type="checkbox" id="allow_public_submissions" name="allow_public_submissions" value="1" <?php checked(1, $allow_public_submissions); ?> />
                             Allow visitors to submit business listings for review
                         </label>
                     </td>
                 </tr>
-                <tr id="submission_email_row" <?php echo $allow_public_submissions ? '' : 'style="display:none;"'; ?>>
+                <tr id="submission_email_row" valign="top" <?php echo $allow_public_submissions ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row">Email Address For Submissions</th>
                     <td>
-                        <h3>Email Address For Submissions</h3>
-                        <label for="submission_email"><input tabindex="1" id="submission_email" name="submission_email"
-                                                             type="text" size="50" class="search-input"
-                                                             value="<?php echo $submission_email; ?>"
-                                                             autocomplete="off"/></label>
+                        <input tabindex="1" id="submission_email" name="submission_email" type="text" size="50" class="regular-text" value="<?php echo $submission_email; ?>" autocomplete="off"/>
                         <p class="description" id="email-required-message" style="color: #d63638; <?php echo $allow_public_submissions ? '' : 'display:none;'; ?>">This field is required when public submissions are allowed.</p>
                     </td>
                 </tr>
-                <tr>
-
+                <tr valign="top">
+                    <th scope="row">General Information</th>
                     <td>
-                        <h3>General Information</h3>
                         <?php wp_editor($general_info, 'general_info', $settings); ?>
                     </td>
                 </tr>
-                <tr>
-
+                <tr valign="top">
+                    <th scope="row">Sponsor Information</th>
                     <td>
-                        <h3>Sponsor Information</h3>
                         <?php wp_editor($sponsor_info, 'sponsor_info', $settings); ?>
                     </td>
                 </tr>

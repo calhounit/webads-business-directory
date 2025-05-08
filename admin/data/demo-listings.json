@@ -1,0 +1,314 @@
+[
+  {
+    "name": "Bella's Italian Restaurant",
+    "category_slug": "restaurants",
+    "details": "Authentic Italian cuisine with a modern twist. Family-owned since 1985.",
+    "address": {
+      "street": "123 Main Street",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10001"
+    },
+    "phone": "555-0101",
+    "website": "https://example.com/bellasitalian"
+  },
+  {
+    "name": "The Hungry Spoon Cafe",
+    "category_slug": "restaurants",
+    "details": "Cozy cafe serving breakfast and lunch with locally-sourced ingredients.",
+    "address": {
+      "street": "456 Oak Avenue",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10001"
+    },
+    "phone": "555-0102",
+    "website": "https://example.com/hungryspoon"
+  },
+  {
+    "name": "Sushi Delight",
+    "category_slug": "restaurants",
+    "details": "Premium sushi and Japanese cuisine. Fresh fish delivered daily.",
+    "address": {
+      "street": "789 Cherry Lane",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10002"
+    },
+    "phone": "555-0103",
+    "website": "https://example.com/sushidelight"
+  },
+  {
+    "name": "City Fashion Boutique",
+    "category_slug": "retail-shopping",
+    "details": "Trendy clothing and accessories for the fashion-forward individual.",
+    "address": {
+      "street": "101 Fashion Blvd",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10003"
+    },
+    "phone": "555-0201",
+    "website": "https://example.com/cityfashion"
+  },
+  {
+    "name": "Tech Haven Electronics",
+    "category_slug": "retail-shopping",
+    "details": "Your one-stop shop for the latest gadgets and tech accessories.",
+    "address": {
+      "street": "202 Digital Drive",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10003"
+    },
+    "phone": "555-0202",
+    "website": "https://example.com/techhaven"
+  },
+  {
+    "name": "Bookworm's Paradise",
+    "category_slug": "retail-shopping",
+    "details": "Independent bookstore with a vast collection of titles and cozy reading nooks.",
+    "address": {
+      "street": "303 Reader's Lane",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10004"
+    },
+    "phone": "555-0203",
+    "website": "https://example.com/bookworm"
+  },
+  {
+    "name": "Wellness Center & Spa",
+    "category_slug": "health-wellness",
+    "details": "Holistic health services including massage, acupuncture, and nutritional counseling.",
+    "address": {
+      "street": "404 Serenity Street",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10005"
+    },
+    "phone": "555-0301",
+    "website": "https://example.com/wellnesscenter"
+  },
+  {
+    "name": "Mindful Meditation Studio",
+    "category_slug": "health-wellness",
+    "details": "Guided meditation classes and mindfulness workshops for all experience levels.",
+    "address": {
+      "street": "505 Calm Court",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10005"
+    },
+    "phone": "555-0302",
+    "website": "https://example.com/mindfulmedi"
+  },
+  {
+    "name": "Natural Healing Clinic",
+    "category_slug": "health-wellness",
+    "details": "Alternative medicine practitioners specializing in herbal remedies and homeopathy.",
+    "address": {
+      "street": "606 Herbal Way",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10006"
+    },
+    "phone": "555-0303",
+    "website": "https://example.com/naturalhealing"
+  },
+  {
+    "name": "Glamour Beauty Salon",
+    "category_slug": "beauty-personal-care",
+    "details": "Full-service salon offering haircuts, coloring, and styling for all hair types.",
+    "address": {
+      "street": "707 Glamour Avenue",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10007"
+    },
+    "phone": "555-0401",
+    "website": "https://example.com/glamourbeauty"
+  },
+  {
+    "name": "Skin Deep Aesthetics",
+    "category_slug": "beauty-personal-care",
+    "details": "Professional skincare treatments including facials, peels, and microdermabrasion.",
+    "address": {
+      "street": "808 Glow Road",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10007"
+    },
+    "phone": "555-0402",
+    "website": "https://example.com/skindeep"
+  },
+  {
+    "name": "Nail Art Studio",
+    "category_slug": "beauty-personal-care",
+    "details": "Creative nail designs and professional manicure/pedicure services.",
+    "address": {
+      "street": "909 Polish Place",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10008"
+    },
+    "phone": "555-0403",
+    "website": "https://example.com/nailartstudio"
+  },
+  {
+    "name": "Quick Fix Auto Repair",
+    "category_slug": "automotive-services",
+    "details": "Fast, reliable auto repairs with certified mechanics. Free estimates on all services.",
+    "address": {
+      "street": "1010 Motor Drive",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10009"
+    },
+    "phone": "555-0501",
+    "website": "https://example.com/quickfixauto"
+  },
+  {
+    "name": "Luxury Car Detailing",
+    "category_slug": "automotive-services",
+    "details": "Premium auto detailing services that make your vehicle look showroom-new.",
+    "address": {
+      "street": "1111 Shine Street",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10009"
+    },
+    "phone": "555-0502",
+    "website": "https://example.com/luxurydetail"
+  },
+  {
+    "name": "Reliable Tire & Alignment",
+    "category_slug": "automotive-services",
+    "details": "Quality tire sales, rotation, and wheel alignment services at competitive prices.",
+    "address": {
+      "street": "1212 Wheel Way",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10010"
+    },
+    "phone": "555-0503",
+    "website": "https://example.com/reliabletire"
+  },
+  {
+    "name": "Handyman Heroes",
+    "category_slug": "home-repair-services",
+    "details": "Professional handyman services for all your home repair and maintenance needs.",
+    "address": {
+      "street": "1313 Fix-It Lane",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10011"
+    },
+    "phone": "555-0601",
+    "website": "https://example.com/handymanheroes"
+  },
+  {
+    "name": "Perfect Plumbing Solutions",
+    "category_slug": "home-repair-services",
+    "details": "24/7 emergency plumbing services. No job too big or small.",
+    "address": {
+      "street": "1414 Pipe Street",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10011"
+    },
+    "phone": "555-0602",
+    "website": "https://example.com/perfectplumbing"
+  },
+  {
+    "name": "Elite Electrical Contractors",
+    "category_slug": "home-repair-services",
+    "details": "Licensed electricians providing residential and commercial electrical services.",
+    "address": {
+      "street": "1515 Wiring Road",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10012"
+    },
+    "phone": "555-0603",
+    "website": "https://example.com/eliteelectrical"
+  },
+  {
+    "name": "Johnson & Associates Law Firm",
+    "category_slug": "professional-services",
+    "details": "Full-service law firm specializing in family law, estate planning, and business contracts.",
+    "address": {
+      "street": "1616 Legal Avenue",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10013"
+    },
+    "phone": "555-0701",
+    "website": "https://example.com/johnsonlaw"
+  },
+  {
+    "name": "Precision Accounting Services",
+    "category_slug": "professional-services",
+    "details": "Experienced CPAs providing tax preparation, bookkeeping, and financial planning.",
+    "address": {
+      "street": "1717 Ledger Lane",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10013"
+    },
+    "phone": "555-0702",
+    "website": "https://example.com/precisionacct"
+  },
+  {
+    "name": "Creative Design Studio",
+    "category_slug": "professional-services",
+    "details": "Innovative graphic design, branding, and marketing solutions for businesses of all sizes.",
+    "address": {
+      "street": "1818 Artistic Way",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10014"
+    },
+    "phone": "555-0703",
+    "website": "https://example.com/creativedesign"
+  },
+  {
+    "name": "ABC Realty Group",
+    "category_slug": "real-estate",
+    "details": "Expert realtors helping you buy, sell, or rent properties with personalized service.",
+    "address": {
+      "street": "1919 Property Plaza",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10015"
+    },
+    "phone": "555-0801",
+    "website": "https://example.com/abcrealty"
+  },
+  {
+    "name": "Luxury Home Specialists",
+    "category_slug": "real-estate",
+    "details": "Boutique real estate agency specializing in high-end residential properties.",
+    "address": {
+      "street": "2020 Mansion Drive",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10015"
+    },
+    "phone": "555-0802",
+    "website": "https://example.com/luxuryhomes"
+  },
+  {
+    "name": "Commercial Property Experts",
+    "category_slug": "real-estate",
+    "details": "Dedicated to helping businesses find the perfect commercial space for their needs.",
+    "address": {
+      "street": "2121 Business Blvd",
+      "city": "Anytown",
+      "state": "NY",
+      "zip": "10016"
+    },
+    "phone": "555-0803",
+    "website": "https://example.com/commercialproperty"
+  }
+]
