@@ -18,9 +18,24 @@ get_header();
                     collapsible: true, active: false, heightStyle: "content"
                 });
 
-                loadFeatured();
-                loadNonFeatured();
+                // First rotate the sponsors, then load them
+                rotateThenLoadSponsors();
             });
+            
+            function rotateThenLoadSponsors() {
+                // Call the rotation endpoint first
+                jQuery.ajax({
+                    url: "<?php echo get_site_url(); ?>/wp-json/wp/v2/business_sponsors_rotate",
+                    dataType: "json",
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    complete: function() {
+                        // After rotation is complete (whether successful or not), load the sponsors
+                        loadFeatured();
+                        loadNonFeatured();
+                    }
+                });
+            }
 
             function loadFeatured() {
                 jQuery.ajax({

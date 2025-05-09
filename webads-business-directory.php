@@ -539,7 +539,9 @@ function business_sponsors_rotate()
 
     // The Query
     $sponsors = new WP_Query($args);
-
+    $rotated = false;
+    $last_id = 0;
+    
     // The Loop
     if ($sponsors->have_posts()) {
         while ($sponsors->have_posts()) {
@@ -547,17 +549,30 @@ function business_sponsors_rotate()
 
             $postid = get_the_id();
             $sort = get_post_meta($postid, 'sponsor_sort', true);
+            
+            // Make sure sort is a number
+            if (!is_numeric($sort)) {
+                $sort = 1;
+            }
 
             $newsort = $sort + 1;
-
-            //echo $sort . '-'. $newsort . '-' . $postid . '<br>';
+            $last_id = $postid;
+            
+            // Update the sort order
             update_post_meta($postid, "sponsor_sort", $newsort);
-
-            //echo get_the_title() . ' - ' . $sort . ' - ' . $newsort . '<br>';
         }
-        //echo $postid . ' - ' . get_the_title($postid);
-        update_post_meta($postid, "sponsor_sort", 1);
+        
+        // Set the last sponsor's sort order to 1 to complete the rotation
+        if ($last_id > 0) {
+            update_post_meta($last_id, "sponsor_sort", 1);
+            $rotated = true;
+        }
     }
-
-
+    
+    // Return a response for the AJAX call
+    return array(
+        'success' => true,
+        'rotated' => $rotated,
+        'message' => 'Sponsor rotation ' . ($rotated ? 'completed successfully' : 'not needed (no sponsors found)')
+    );
 }
