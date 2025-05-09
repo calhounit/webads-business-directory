@@ -204,7 +204,7 @@ function business_post_types()
     $labels = array(
         'name' => _x('Businesses', 'Post Type General Name', 'text_domain'),
         'singular_name' => _x('Business', 'Post Type Singular Name', 'text_domain'),
-        'menu_name' => __('Business Listings', 'text_domain'),
+        'menu_name' => __('Business Directory', 'text_domain'),
         'name_admin_bar' => __('Business', 'text_domain'),
         'archives' => __('Item Archives', 'text_domain'),
         'attributes' => __('Item Attributes', 'text_domain'),

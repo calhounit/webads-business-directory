@@ -557,7 +557,7 @@ $current_category = !empty($current_terms) ? $current_terms[0] : '';
                                                 <div id="frm_details_container"
                                                      class="frm_form_field form-field  frm_required_field frm_top_container frm_full">
                                                     <label for="field_details" id="field_details_label"
-                                                           class="frm_primary_label">Details</label>
+                                                           class="frm_primary_label">Business Information</label>
                                                     <textarea id="field_details" name="field_details" rows="6"><?php echo $details ?></textarea>
                                                 </div>
                                                 <div id="messages" class="business-notice business-notice-error">

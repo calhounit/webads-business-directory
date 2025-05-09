@@ -435,7 +435,7 @@ function business_meta_callback_function($args)
         ?>
     </div>
     <div class="business-meta-div">
-        <label for="business_details" class="business-meta-label">Details</label>
+        <label for="business_details" class="business-meta-label">Business Information</label>
         <textarea id="business_details" class="widefat" name="business_details" rows="6"><?php echo $details; ?></textarea>
         <?php if ($parentid !== '' && $parentid !== 'add') {
             $odetails = get_post_meta($parentid, 'business_details', true);
@@ -940,7 +940,7 @@ function webads_business_settings()
                                     $image_url = plugins_url('webads-business-directory/images/' . $sponsor['filename'], dirname(plugin_dir_path(__FILE__)));
                                     update_post_meta($post_id, 'sponsor_image', $image_url);
                                     update_post_meta($post_id, 'sponsor_url', $sponsor['url']);
-                                    update_post_meta($post_id, 'sponsor_newwindow', 1); // Open in new window
+                                    update_post_meta($post_id, 'sponsor_newwindow', 'on'); // Open in new window
                                     update_post_meta($post_id, 'sponsor_sort', 1); // Default sort order
                                     
                                     // Mark as demo sponsor for future identification

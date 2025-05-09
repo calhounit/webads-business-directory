@@ -252,12 +252,19 @@ get_header();
                                     );
                                 }
                                 
-                                // Display businesses grouped by category
+                                // Sort categories alphabetically by name
+                                $category_names = array();
                                 foreach ($businesses_by_category as $category_id => $category_data) {
-                                    echo '<h2>' . esc_html($category_data['name']) . '</h2>';
+                                    $category_names[$category_id] = $category_data['name'];
+                                }
+                                asort($category_names); // Sort alphabetically, case-insensitive
+                                
+                                // Display businesses grouped by category in alphabetical order
+                                foreach ($category_names as $category_id => $name) {
+                                    echo '<h2>' . esc_html($name) . '</h2>';
                                     echo '<div class="business-accordion">';
                                     
-                                    foreach ($category_data['businesses'] as $business) {
+                                    foreach ($businesses_by_category[$category_id]['businesses'] as $business) {
                                         ?>
                                         <h4><?php echo esc_html($business['title']); ?><i class="fa fa-angle-down"></i></h4>
 
@@ -345,7 +352,7 @@ get_header();
                                                 </div>
                                                 <?php
                                                 if (!empty($business['details'])) {
-                                                    echo '<div class="col-sm-12" style="text-align: center;"><h4 style="text-decoration: underline;" align="center">Details</h4>' . wpautop($business['details']) . '</div>';
+                                                    echo '<div class="col-sm-12" style="text-align: center;"><h4 style="text-decoration: underline;" align="center">Business Information</h4>' . wpautop($business['details']) . '</div>';
                                                 }
                                                 ?>
                                             </div>
