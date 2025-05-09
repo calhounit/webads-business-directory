@@ -1076,9 +1076,13 @@ function webads_business_settings()
             if ($use_default_categories) {
                 // Add default categories
                 foreach ($default_categories as $category_name) {
-                    // Check if category already exists
+                    // Check if category already exists - normalize name to avoid duplicates
                     $existing_term = get_term_by('name', $category_name, 'business_category');
-                    if (!$existing_term) {
+                    $normalized_name = str_replace(' & ', ' ', $category_name);
+                    $existing_term_normalized = get_term_by('name', $normalized_name, 'business_category');
+                    
+                    // Only create if neither the exact name nor the normalized version exists
+                    if (!$existing_term && !$existing_term_normalized) {
                         // Create the category
                         wp_insert_term($category_name, 'business_category');
                     }
@@ -1103,10 +1107,16 @@ function webads_business_settings()
                 
                 // Make sure we have a valid term ID for Uncategorized
                 if ($uncategorized_id) {
-                    // Process each default category
-                    foreach ($default_categories as $category_name) {
-                        $term = get_term_by('name', $category_name, 'business_category');
-                        if ($term && !is_wp_error($term)) {
+                    // Get all categories except Uncategorized
+                    $all_categories = get_terms(array(
+                        'taxonomy' => 'business_category',
+                        'hide_empty' => false,
+                        'exclude' => array($uncategorized_id)
+                    ));
+                    
+                    // Process each category that's not Uncategorized
+                    foreach ($all_categories as $term) {
+                        if ($term && !is_wp_error($term) && $term->term_id != $uncategorized_id) {
                             $term_id = $term->term_id;
                             
                             // Get posts in this category
