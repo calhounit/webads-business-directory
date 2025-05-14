@@ -63,21 +63,11 @@ class Webads_Business_Directory_Admin
      */
     public function enqueue_styles()
     {
-
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Webads_Business_Directory_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Webads_Business_Directory_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
-
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/webads-business-directory-admin.css', array(), '1.0.2', 'all');
-
+        // Only load admin styles on relevant screens
+        $screen = get_current_screen();
+        if ($screen && in_array($screen->post_type, array('business', 'business_sponsor'))) {
+            wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/webads-business-directory-admin.css', array(), '1.0.2', 'all');
+        }
     }
 
     /**
@@ -87,21 +77,11 @@ class Webads_Business_Directory_Admin
      */
     public function enqueue_scripts()
     {
-
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Webads_Business_Directory_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Webads_Business_Directory_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
-
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/webads-business-directory-admin.js', array('jquery'), $this->version, false);
-
+        // Only load admin scripts on relevant screens
+        $screen = get_current_screen();
+        if ($screen && in_array($screen->post_type, array('business', 'business_sponsor'))) {
+            wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/webads-business-directory-admin.js', array('jquery'), $this->version, false);
+        }
     }
 
 }
@@ -685,9 +665,9 @@ function save_business()
             wp_set_object_terms($post->ID, $category_id, 'business_category');
         } else {
             // Default to Uncategorized if no category is selected
-            $uncategorized_term = get_term_by('slug', 'uncategorized', 'business_category');
-            if ($uncategorized_term) {
-                wp_set_object_terms($post->ID, $uncategorized_term->term_id, 'business_category');
+            $uncategorized = get_term_by('slug', 'uncategorized', 'business_category');
+            if ($uncategorized) {
+                wp_set_object_terms($post->ID, $uncategorized->term_id, 'business_category');
             }
         }
 
@@ -778,18 +758,29 @@ add_filter('get_sample_permalink_html', 'business_filter_get_sample_permalink_ht
 
 
 // attempt to manipulate dom of core events admin screens
-function webads_business_current_screen()
-{
-    $currentScreenID = get_current_screen()->id;
-    //echo $currentScreen->id;
-    if ($currentScreenID === "edit-business" or $currentScreenID === "edit-business_sponsor") {
-        //echo $currentScreen->id;
-        function webads_business_custom_js()
-        {
+// function webads_business_current_screen()
+// {
+//     $currentScreenID = get_current_screen()->id;
+//     //echo $currentScreen->id;
+//     if ($currentScreenID === "edit-business" or $currentScreenID === "edit-business_sponsor") {
+//         //echo $currentScreen->id;
+//         function webads_business_custom_js()
+//         {
+//             echo '<script type="text/javascript" src="' . plugin_dir_url(__FILE__) . 'js/' . get_current_screen()->id . '-hack.js"></script>';
+//         }
+
+//         // Add hook for admin <head></head>
+//         add_action('admin_head', 'webads_business_custom_js');
+//     }
+// }
+
+function webads_business_current_screen() {
+    // Only load custom JS for business-related screens
+    $currentScreen = get_current_screen();
+    if (in_array($currentScreen->post_type, array('business', 'business_sponsor'))) {
+        function webads_business_custom_js() {
             echo '<script type="text/javascript" src="' . plugin_dir_url(__FILE__) . 'js/' . get_current_screen()->id . '-hack.js"></script>';
         }
-
-        // Add hook for admin <head></head>
         add_action('admin_head', 'webads_business_custom_js');
     }
 }
@@ -1439,7 +1430,10 @@ function business_edit_form_before_permalink($post)
 
 // remove featured image meta box
 function business_remove_meta_boxes() {
-    remove_meta_box('postimagediv', 'business', 'side');
-    remove_meta_box('postimagediv', 'business_sponsor', 'side');
+    $screen = get_current_screen();
+    if ($screen && in_array($screen->post_type, array('business', 'business_sponsor'))) {
+        remove_meta_box('postimagediv', 'business', 'side');
+        remove_meta_box('postimagediv', 'business_sponsor', 'side');
+    }
 }
 add_action('admin_head','business_remove_meta_boxes'); //admin_init & admin_menu don't work for certain meta boxes
